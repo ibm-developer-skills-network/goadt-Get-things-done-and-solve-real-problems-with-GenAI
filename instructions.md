@@ -336,7 +336,16 @@ Let's start by importing the necessary modules and defining our interfaces:
 ```typescript
 import { Annotation, StateGraph, START, END } from '@langchain/langgraph';
 import { generateMessage } from './llm';
+```
 
+Let's break this down:
+
+- We import `Annotation`, `StateGraph`, `START`, and `END` from LangGraph. These are the building blocks we'll use to create our workflow.
+- We import `generateMessage` from a file called `llm.ts` that we'll create later. This function will handle the interaction with our LLM.
+
+Next, let's define our annotation structure:
+
+```typescript
 interface CoffeeCustomizations {
     creams: number,
     milks: number,
@@ -344,17 +353,7 @@ interface CoffeeCustomizations {
     sweeteners: number,
     whippedCream: boolean,
 }
-```
 
-Let's break this down:
-
-- We import `Annotation`, `StateGraph`, `START`, and `END` from LangGraph. These are the building blocks we'll use to create our workflow.
-- We import `generateMessage` from a file called `llm.ts` that we'll create later. This function will handle the interaction with our LLM.
-- We define an interface `CoffeeCustomizations` that describes the structure of our coffee customization options.
-
-Next, let's define our annotation structure:
-
-```typescript
 const CoffeeAnnotation = Annotation.Root({
     customerName: Annotation<string>,
     coffeeName: Annotation<string>,
@@ -362,6 +361,8 @@ const CoffeeAnnotation = Annotation.Root({
     message: Annotation<string>,
 });
 ```
+
+First we define the interface `CoffeeCustomizations` that describes the structure of our coffee customization options.
 
 This `CoffeeAnnotation` defines the structure of the data that will flow through our graph. It includes:
 - `customerName`: The name of the customer
@@ -375,12 +376,12 @@ Add the following code to `graph.ts`:
 
 ```typescript
 const stepGenerateMessage = async (state: typeof CoffeeAnnotation.State) => {
-    let coffeeOptions = {
+    const coffeeOptions = {
         coffeeName: state.coffeeName,
         customizations: state.customizations
     }
 
-    let message = await generateMessage(state.customerName, coffeeOptions)
+    const message = await generateMessage(state.customerName, coffeeOptions)
     state.message = message;
 
     return state;
@@ -422,6 +423,12 @@ This completes our LangGraph workflow setup. In the next step, we'll implement t
 ::page{title="Integrating the Large Language Model"}
 
 Now that we have our LangGraph workflow set up, let's implement the LLM integration to generate our personalized messages.
+
+Before we begin coding we will need to install the `@langchain/community` npm package which will include the APIs to use _watsonx.ai_ LLMs. If you wanted to use OpenAI LLMs you would _instead_ install `@langchain/openai`.
+
+```bash
+npm install @langchain/community
+```
 
 Create a new file called `llm.ts` in the `src` directory:
 
