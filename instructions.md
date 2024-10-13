@@ -36,19 +36,19 @@ Tech Cafe is a bustling coffee chain with multiple locations across the city. Re
 
 ## The Challenges We’re Facing
 
-1.	Personalized Customer Experience: With an ever-increasing customer base, providing a personalized touch to each order has become a significant challenge.
-2.	Dynamic Pricing Strategy: Adjusting prices in real-time based on factors like cafe occupancy and demand is complex but essential for maximizing profitability.
-3.	Efficient Order Processing: Managing high volumes of orders without compromising service quality requires a more streamlined system.
-4.	Adaptive Marketing: Staying ahead in a competitive market means continuously adapting our offerings and promotions based on customer preferences and trends.
+- Personalized Customer Experience: With an ever-increasing customer base, providing a personalized touch to each order has become a significant challenge.
+- Dynamic Pricing Strategy: Adjusting prices in real-time based on factors like cafe occupancy and demand is complex but essential for maximizing profitability.
+- Efficient Order Processing: Managing high volumes of orders without compromising service quality requires a more streamlined system.
+- Adaptive Marketing: Staying ahead in a competitive market means continuously adapting our offerings and promotions based on customer preferences and trends.
 
 ## Our Solution: An AI-Powered Application
 
 To tackle these challenges, we’re developing an AI-enhanced application that revolutionizes how we handle coffee sales. This app represents a real-life sale at Tech Cafe, integrating advanced AI features to:
 
 - Enhance Personalization: Use AI to generate personalized messages and recommendations for customers.
--	Implement Dynamic Pricing: Adjust prices based on real-time data like cafe occupancy.
--	Streamline Operations: Automate order processing to improve efficiency and reduce errors.
--	Enable Human-in-the-Loop: Allow human oversight in AI decision-making processes for better control and accuracy.
+- Implement Dynamic Pricing: Adjust prices based on real-time data like cafe occupancy.
+- Streamline Operations: Automate order processing to improve efficiency and reduce errors.
+- Enable Human-in-the-Loop: Allow human oversight in AI decision-making processes for better control and accuracy.
 
 <<Figure: The user interface of the Tech Cafe application, showcasing the seamless ordering experience.>>
 
@@ -84,20 +84,18 @@ TODO: Double check with actual structure and update respectively
 
 Project Structure Overview:
 
--	src/: Contains the source code of the application.
--	controllers/: Holds the controller files responsible for handling HTTP requests and responses.
--	routes/: Defines the URL mappings to the corresponding controllers.
--	public/: Contains static assets like HTML, CSS, and JavaScript files that are served directly to the client.
--	css/: Stylesheets for the application.
--	js/: Client-side JavaScript scripts.
--	images/: Images used in the application.
--	views/: (Placeholder) Where template files would reside if using a templating engine.
--	models/: (Placeholder) For data models and database interaction.
--	package.json: Lists the project dependencies and scripts.
--	tsconfig.json: Configuration file for TypeScript compiler options.
--	README.md: Provides information about the project.
-
-Note: Some folders like models/ and views/ are placeholders and may be empty or populated in later steps.
+- **src/**: Contains the source code of the application.
+  - **server.ts**: The main application code that runs the express application
+  - **controllers/**: Holds the controller files responsible for handling HTTP requests and responses.
+  - **routes/**: Defines the URL mappings to the corresponding controllers.
+  - **public/**: Contains static assets like HTML, CSS, and JavaScript files that are served directly to the client.
+    - **css/**: Stylesheets for the application.
+    - **js/**: Client-side JavaScript scripts.
+    - **images/**: Images used in the application.
+    - **index.html**: The main HTML of the app
+- **package.json**: Lists the project dependencies and scripts.
+- **tsconfig.json**: Configuration file for TypeScript compiler options.
+- **README.md**: Provides information about the project.
 
 ## Install Dependencies
 
@@ -117,7 +115,7 @@ What This Does:
 Now that we’ve installed the dependencies, we’re ready to run the application and see it in action.
 
 ```bash
-npm start
+npm run dev
 ```
 
 What This Does:
@@ -128,17 +126,20 @@ What This Does:
 Since we’re running the application in a Cloud IDE environment, we need to expose the port to access it via a browser.
 Click the button below to open your app:
 
-::startApplication{port="3000” display="standalone" name="Open Tech Cafe App” route=”/”}
+::startApplication{port="3000” display="internal" name="Open Tech Cafe App” route=”/”}
 
 ##	Explore the base application
 You should now see the Tech Cafe application running in your browser. Feel free to navigate through the app to understand its current functionality.
 
-TODO: Add image
+TODO: Add GIF image
 
 Features to Notice:
 -	Coffee Menu: Displays a list of available coffee options.
 -	Customization Options: Allows you to customize your coffee (e.g., add sugar, milk).
 -	Order Submission: Lets you place an order and receive a confirmation.
+
+
+TODO: Tell user to stop the server CTRL+C
 
 
 Now that you have the base application running and understand its structure, you’re all set to start enhancing it with AI-powered features in the upcoming steps.
@@ -259,12 +260,12 @@ npx ts-node src/helloWorldGraph.ts
 
 You should see output similar to:
 
-```
-Step 1: Created greeting.
+TODO: put an image?
+
+> Step 1: Created greeting.
 Step 2: Set recipient.
 Step 3: Combined message.
 Final State: { greeting: 'Hello', recipient: 'World', message: 'Hello, World!' }
-```
 
 This indicates that our graph executed successfully.
 
@@ -272,26 +273,35 @@ This indicates that our graph executed successfully.
 
 LangGraph allows us to generate a visual diagram of the graph.
 
+
+First let's save `diagram.mmd` to save a mermaid representation of our graph:
+
 ```typescript
 import fs from 'fs';
 
-const representation = helloWorldGraph.getGraph();
-const image = await representation.drawMermaidPng();
-const arrayBuffer = await image.arrayBuffer();
+export const drawGraph = async () => {
+    const representation = helloWorldGraph.getGraph();
+    const image = await representation.drawMermaid();
+    fs.writeFileSync('diagram.mmd', image, 'utf8');
+}
 
-fs.writeFileSync('diagram.png', arrayBuffer, 'utf8');
-
-
-// fs.writeFileSync('diagram.mmd', graph.drawMermaid(), 'utf8');
-// import { run } from "@mermaid-js/mermaid-cli"
-// run("diagram.mmd", "output.png")
-
+drawGraph()
 ```
 
-TODO: finish this part
+Then install the mermaid-cli which we'll use to convert the `mmd` to a `png`:
 
-You can open the image by clicking on it in the file explorer pane in the Cloud IDE.
-::openFile{path=“helloWorldGraph.png”}
+``bash
+sudo npm install -g @mermaid-js/mermaid-cli
+```
+
+Now convert the file:
+``bash
+mmdc -i diagram.mmd -o diagram.png
+```
+
+Now you can download this png to view it.
+
+TODO: finish this part. add in image
 
 Figure: Visual representation of the Hello World graph.
 
@@ -1282,7 +1292,7 @@ npm start
 
 Click the button below to open your app:
 
-::startApplication{port="3000” display="standalone" name="Open Tech Cafe App” route=”/admin”}
+::startApplication{port="3000” display="internal" name="Open Tech Cafe App” route=”/admin”}
 
 You should see the Admin Dashboard with the current sale suggestion.
 
@@ -1290,7 +1300,7 @@ Try approving, modifying, and rejecting sales. Verify that the actions are refle
 
 Open another browser tab. Check if the coffee prices are updated when you approve a sale.
 
-::startApplication{port="3000” display="standalone" name="Open Another Tech Cafe App” route=”/”}
+::startApplication{port="3000” display="internal" name="Open Another Tech Cafe App” route=”/”}
 
 6. Monitor your server console to see the HITL process in action.
 

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { runCoffeeMessageGraph } from '../graph';
 
 // Mock data for coffees
 const coffees = [
@@ -7,6 +8,14 @@ const coffees = [
   { id: 3, name: 'Cappuccino', price: 4.5 },
   { id: 4, name: 'Americano', price: 3.5 }
 ];
+
+// Get all coffees
+export const setCoffeePrice = (saleAmount = 0) => {
+  coffees[0].price = 3 * (1 - saleAmount/100);
+  coffees[1].price = 4 * (1 - saleAmount/100);
+  coffees[2].price = 4.5 * (1 - saleAmount/100);
+  coffees[3].price = 3.5 * (1 - saleAmount/100);
+};
 
 // Get all coffees
 export const getCoffees = (req: Request, res: Response) => {
@@ -25,17 +34,16 @@ export const getCoffeeById = (req: Request, res: Response) => {
 };
 
 // Process an order
-export const processOrder = (req: Request, res: Response) => {
+export const processOrder = async (req: Request, res: Response) => {
   const order = req.body;
-
-  // Here you would typically process the order,
-  // e.g., save it to a database, perform validations, etc.
-  // Since this is a mocked app, we'll assume it's always successful.
 
   console.log('Received Order:', order);
 
+  const graphOutput = await runCoffeeMessageGraph(order);
+
+  // Respond with order confirmation and the generated message
   res.status(200).json({
-    message: 'Order processed successfully',
-    orderId: Math.floor(Math.random() * 1000000) // Mock order ID
+    message: graphOutput.message,
+    orderId: Math.floor(Math.random() * 1000000), // Mock order 
   });
 };
