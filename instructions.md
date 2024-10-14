@@ -28,7 +28,7 @@ Large Language Models are AI models trained on vast amounts of text data. They c
 TODO: fix this segue
 In the next steps, we'll implement these concepts to enhance our Tech Cafe application.
 
-::page{title="Introducing Tech Cafe and Our Challenges”}
+::page{title="Introducing Tech Cafe and Our Challenges"}
 
 ## Welcome to Tech Cafe
 
@@ -55,7 +55,7 @@ To tackle these challenges, we’re developing an AI-enhanced application that r
 In the next section, we’ll set up the project by cloning the repository and running the base application. Let’s get started!
 
 
-::page{title="Setting Up the Tech Cafe Application”}
+::page{title="Setting Up the Tech Cafe Application"}
 
 In this section, we’ll set up the Tech Cafe application in your development environment. By the end of this step, you’ll have the base application running and ready to start integrating AI-powered features.
 
@@ -69,7 +69,7 @@ Run the following command in the terminal to clone the repository:
 
 ```bash
 # Clone the repository
-git clone https://github.com/ibm-developer-skills-network/pqrkh-adapting_to_rapid_advances_in_llms.git
+git clone https://github.com/bsteinfeld/sturdy-disco.git
 
 # Change your current directory to the cloned repository
 cd pqrkh-adapting_to_rapid_advances_in_llms
@@ -126,7 +126,7 @@ What This Does:
 Since we’re running the application in a Cloud IDE environment, we need to expose the port to access it via a browser.
 Click the button below to open your app:
 
-::startApplication{port="3000” display="internal" name="Open Tech Cafe App” route=”/”}
+::startApplication{port="3000" display="internal" name="Open Tech Cafe App" route="/"}
 
 ##	Explore the base application
 You should now see the Tech Cafe application running in your browser. Feel free to navigate through the app to understand its current functionality.
@@ -146,9 +146,9 @@ Now that you have the base application running and understand its structure, you
 
 Let’s continue our journey to transform Tech Cafe into an intelligent, AI-enhanced application!
 
-::page{title=“Creating a Simple Hello World Graph with LangGraph”}
+::page{title="Creating a Simple Hello World Graph with LangGraph"}
 
-Before we begin enhancing our Cafe application lets first dive into the basics of LangGraph by creating a simple “Hello World” graph. This example will help you understand the core concepts of LangGraph, including creating graphs, defining annotations, and invoking the graph. By the end of this step, you’ll run the graph and you'll also create a visual representation of it!
+Before we begin enhancing our Cafe application lets first dive into the basics of LangGraph by creating a simple "Hello World" graph. This example will help you understand the core concepts of LangGraph, including creating graphs, defining annotations, and invoking the graph. By the end of this step, you’ll run the graph and you'll also create a visual representation of it!
 
 ## What is LangGraph?
 
@@ -168,7 +168,7 @@ npm install @langchain/langgraph @langchain/core
 
 Let’s start by creating a new file for our Hello World graph.
 
-::openFile{path=“src/helloWorldGraph.ts”}
+::openFile{path="sturdy-disco/src/helloWorldGraph.ts"}
 
 ### Importing LangGraph Modules
 
@@ -191,8 +191,8 @@ const HelloWorldAnnotation = Annotation.Root({
 ```
 
 We define a root annotation HelloWorldAnnotation with three fields:
-- greeting: A string for the greeting word (e.g., “Hello”)
-- recipient: A string for the recipient’s name (e.g., “World”)
+- greeting: A string for the greeting word (e.g., "Hello")
+- recipient: A string for the recipient’s name (e.g., "World")
 - message: A string that will hold the combined message.
 
 ### Defining the Graph Steps
@@ -333,7 +333,7 @@ Let's start by creating our LangGraph workflow. We'll do this step-by-step.
 
 First, create a new file called `graph.ts` in the `src` directory:
 
-::openFile{path="src/graph.ts"}
+::openFile{path="sturdy-disco/src/graph.ts"}
 
 Let's start by importing the necessary modules and defining our interfaces:
 
@@ -436,7 +436,7 @@ npm install @langchain/community
 
 Create a new file called `llm.ts` in the `src` directory:
 
-::openFile{path="src/llm.ts"}
+::openFile{path="sturdy-disco/src/llm.ts"}
 
 Let's start by importing the necessary modules and setting up our LLM:
 
@@ -550,7 +550,7 @@ Now that we have our LangGraph workflow and LLM integration set up, we need to u
 
 Open the `src/controllers/coffeeController.ts` file:
 
-::openFile{path="src/controllers/coffeeController.ts"}
+::openFile{path="sturdy-disco/src/controllers/coffeeController.ts"}
 
 Update the imports at the top of the file:
 
@@ -594,7 +594,7 @@ The final step in our AI enhancement is to update the frontend to display the pe
 
 Open the `src/public/js/main.js` file:
 
-::openFile{path="src/public/js/main.js"}
+::openFile{path="sturdy-disco/src/public/js/main.js"}
 
 Update the part of the code that handles the response from the backend when calling the `sendOrderToBackend` function. On **line 206** update the following:
 
@@ -613,7 +613,7 @@ Congratulations! You've successfully enhanced Tech Cafe with AI-powered personal
 npm run dev
 ```
 
-::startApplication{port="3000” display="internal" name="Open Tech Cafe App” route=”/”}
+::startApplication{port="3000" display="internal" name="Open Tech Cafe App" route="/"}
 
 
 TODO: Also add a screenshot/gif
@@ -638,7 +638,7 @@ Our first task is to implement an image processing feature that will analyze ima
 
 Open the `src/graph.ts` file:
 
-::openFile{path="src/graph.ts"}
+::openFile{path="sturdy-disco/src/graph.ts"}
 
 Add the following imports at the top of the file:
 
@@ -702,7 +702,7 @@ TODO: Add mention of llama 3.2
 
 Open the `src/llm.ts` file:
 
-::openFile{path="src/llm.ts"}
+::openFile{path="sturdy-disco/src/llm.ts"}
 
 2. Add the following imports at the top of the file:
 
@@ -816,7 +816,7 @@ It's important to note that in our example we are just simulating a webcam feed 
 
 Open the `src/server.ts` file:
 
-::openFile{path="src/server.ts"}
+::openFile{path="sturdy-disco/src/server.ts"}
 
 Add the following imports at the top of the file:
 
@@ -847,7 +847,7 @@ This cron job will run every minute. It will scan the cafe image, and if there a
 
 Now, let's implement the `setCoffeePrice` function. Open the `src/controllers/coffeeController.ts` file:
 
-::openFile{path="src/controllers/coffeeController.ts"}
+::openFile{path="sturdy-disco/src/controllers/coffeeController.ts"}
 
 Add the following function to the file:
 
@@ -873,7 +873,7 @@ Now that we have implemented dynamic pricing on the backend, we need to update o
 
 Open the `src/public/js/main.js` file:
 
-::openFile{path="src/public/js/main.js"}
+::openFile{path="sturdy-disco/src/public/js/main.js"}
 
 2. Modify the `DOMContentLoaded` event listener to periodically fetch the latest coffee prices:
 
@@ -921,7 +921,7 @@ This modification will fetch the latest coffee prices every 30 seconds and updat
 
 To make the price changes more noticeable, let's add a simple animation when prices change. Add the following CSS to `src/public/css/styles.css`:
 
-::openFile{path="src/public/css/styles.css"}
+::openFile{path="sturdy-disco/src/public/css/styles.css"}
 
 ```css
 @keyframes priceChange {
@@ -1014,7 +1014,7 @@ Let's start by modifying our backend to support this new workflow.
 
 First, we'll update our `graph.ts` file to support the HITL workflow:
 
-::openFile{path="src/graph.ts"}
+::openFile{path="sturdy-disco/src/graph.ts"}
 
 Add the following code to the existing `graph.ts` file:
 
@@ -1083,7 +1083,7 @@ Now, let's create an admin interface to review and approve sale suggestions:
 
 Create a new file `src/public/admin.html`:
 
-::openFile{path="src/public/admin.html"}
+::openFile{path="sturdy-disco/src/public/admin.html"}
 
 Add the following content:
 
@@ -1118,7 +1118,7 @@ Add the following content:
 
 2. Create a new file `src/public/js/admin.js`:
 
-::openFile{path="src/public/js/admin.js"}
+::openFile{path="sturdy-disco/src/public/js/admin.js"}
 
 Add the following content:
 
@@ -1177,7 +1177,7 @@ Now, let's create the backend routes to handle admin actions:
 
 Create a new file `src/routes/adminRoutes.ts`:
 
-::openFile{path="src/routes/adminRoutes.ts"}
+::openFile{path="sturdy-disco/src/routes/adminRoutes.ts"}
 
 Add the following content:
 
@@ -1197,7 +1197,7 @@ export default router;
 
 Create a new file `src/controllers/adminController.ts`:
 
-::openFile{path="src/controllers/adminController.ts"}
+::openFile{path="sturdy-disco/src/controllers/adminController.ts"}
 
 Add the following content:
 
@@ -1235,7 +1235,7 @@ export const rejectSale = async (req: Request, res: Response) => {
 
 Update `src/server.ts` to include the new admin routes:
 
-::openFile{path="src/server.ts"}
+::openFile{path="sturdy-disco/src/server.ts"}
 
 Add the following lines:
 
@@ -1262,7 +1262,7 @@ npm start
 
 Click the button below to open your app:
 
-::startApplication{port="3000” display="internal" name="Open Tech Cafe App” route=”/admin”}
+::startApplication{port="3000" display="internal" name="Open Tech Cafe App" route="/admin"}
 
 You should see the Admin Dashboard with the current sale suggestion.
 
@@ -1270,7 +1270,7 @@ Try approving, modifying, and rejecting sales. Verify that the actions are refle
 
 Open another browser tab. Check if the coffee prices are updated when you approve a sale.
 
-::startApplication{port="3000” display="internal" name="Open Another Tech Cafe App” route=”/”}
+::startApplication{port="3000" display="internal" name="Open Another Tech Cafe App" route="/"}
 
 6. Monitor your server console to see the HITL process in action.
 
