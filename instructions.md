@@ -154,6 +154,10 @@ Before we begin enhancing our Cafe application lets first dive into the basics o
 
 LangGraph is a powerful library that allows you to define and execute workflows (graphs) in a structured and modular way. It is particularly useful when working with Large Language Models (LLMs), enabling you to create complex AI-driven workflows with ease.
 
+## Why LangGraph?
+
+TODO: put in images show traditional code, a simple chain, and then a graph (with conditionals and stuff). Then describe how we both get more control of the workflow which gives us lots of power, but also that each of the nodes are easily pluggable modules to keep the code easy to work with and adaptable (which is ever so important for llms).
+
 ## Installing the langgraph libraries
 
 ```bash
@@ -436,15 +440,16 @@ Create a new file called `llm.ts` in the `src` directory:
 
 Let's start by importing the necessary modules and setting up our LLM:
 
+TODO: Determine which model to use here (meta-llama/llama-3-8b-instruct)
+
 ```typescript
 import { PromptTemplate } from '@langchain/core/prompts';
 import { WatsonxAI } from "@langchain/community/llms/watsonx_ai";
 
 export const PROJECT_ID = "skills-network"
-// export const IBMCLOUD_API_KEY = process.env.IBMCLOUD_API_KEY
 
 const model = new WatsonxAI({
-  ibmCloudApiKey: IBMCLOUD_API_KEY,
+  // ibmCloudApiKey: "set_when_using_your_own_account",
   projectId: PROJECT_ID,
   modelId: "meta-llama/llama-3-2-90b-vision-instruct",
   modelParameters: {
@@ -460,8 +465,10 @@ Let's break this down:
 
 - We import `PromptTemplate` from LangChain, which we'll use to create our prompt for the LLM.
 - We import `WatsonxAI`, which is the specific LLM we'll be using.
-- We define our `PROJECT_ID` and get the `IBMCLOUD_API_KEY` from environment variables.
+- We define our `PROJECT_ID` to `skills-network` which is a special project that works within this Skills Network lab environment.
 - We create a new `WatsonxAI` model instance with our API key, project ID, and some model parameters.
+
+_Note: When coding this outside this Skills Network labs environment you will need to pass your own `projectId` and well as `ibmCloudApiKey`._
 
 4. Next, let's define our prompt template:
 
@@ -513,10 +520,10 @@ export async function generateMessage(name: string, order: any): Promise<string>
   const promptText = await prompt.format({
     name: name,
     coffeeName: order.coffeeName,
-    creams: order.customizations.creams,
-    milk: order.customizations.milk,
-    sugars: order.customizations.sugars,
-    sweeteners: order.customizations.sweeteners,
+    creams: order.customizations.creams ?? 0,
+    milk: order.customizations.milk ?? 0,
+    sugars: order.customizations.sugars ?? 0,
+    sweeteners: order.customizations.sweeteners ?? 0,
     whippedCream: order.customizations.whippedCream ? 'Yes' : 'No',
   });
 
@@ -589,82 +596,38 @@ Open the `src/public/js/main.js` file:
 
 ::openFile{path="src/public/js/main.js"}
 
-Find the `sendOrderToBackend` function and update it to handle the new response format:
+Update the part of the code that handles the response from the backend when calling the `sendOrderToBackend` function. On **line 206** update the following:
 
 ```javascript
-function sendOrderToBackend(orderData) {
-  return fetch('/api/coffees/orders', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(orderData)
-  });
-}
-```
-
-Now, update the part of the code that handles the response from the backend:
-
-```javascript
-sendOrderToBackend(window.currentOrder)
-  .then(response => {
-    if (response.ok) {
-      return response.json();
-    } else {
-      throw new Error('Failed to process the order.');
-    }
-  })
-  .then(data => {
-    console.log('Order processed successfully:', data);
-    const customizationModal = document.getElementById('customization-modal');
-    closeModal(customizationModal);
-
-    const message = data.message;
-
-    openPurchaseModal(message);
-  })
-  .catch(error => {
-    console.error('Error processing order:', error);
-    alert('There was an error processing your order. Please try again.');
-  });
+// const message = `Your ${window.currentOrder.coffeeName} is ready.`
+const message = data.message;
 ```
 
 The key change here is that we're now using `data.message` as the message to display, which is our AI-generated personalized message.
-
-Finally, update the `openPurchaseModal` function to display this message:
-
-```javascript
-function openPurchaseModal(message) {
-  const purchaseModal = document.getElementById('purchase-modal');
-
-  document.getElementById('user-name').textContent = window.currentOrder.customerName;
-  document.getElementById('coffee-message').textContent = message;
-
-  const coffeeImage = document.getElementById('coffee-image');
-  coffeeImage.src = getCoffeeImage(window.currentOrder.coffeeId);
-  coffeeImage.alt = `${window.currentOrder.coffeeName} Image`;
-
-  displayCustomizations();
-
-  purchaseModal.style.display = 'block';
-}
-```
 
 With these changes, our frontend will now display the AI-generated personalized message for each order.
 
 Congratulations! You've successfully enhanced Tech Cafe with AI-powered personalization. Users will now receive unique, personalized messages with each coffee order, creating a more engaging and memorable experience.
 
-TODO: Run it and test it out
+```bash
+npm run dev
+```
+
+::startApplication{port="3000” display="internal" name="Open Tech Cafe App” route=”/”}
+
+
 TODO: Also add a screenshot/gif
 
 
 ::page{title="Enhancing Tech Cafe with more advanced AI Features"}
 
+TODO: Make this suck less
+
 In the following section, we'll be taking Tech Cafe to the next level by incorporating more advanced AI features. We'll be working with images, creating more complex graphs, and implementing a dynamic pricing system based on cafe occupancy.
 
-    Tech Cafe's coffee shops get a lot of foot traffic and would like to adjust their pricing dynamically depending on the foot traffic outside the restaurant. To accomplish this, a simple webcamera is installed which sends a constant stream of images of the foot traffic on the street.
-
-    Utilizing langgraph and Llama 3.2 vision you will implement an example solution to this problem.
+> Tech Cafe's coffee shops get a lot of foot traffic and would like to adjust their pricing dynamically depending on the foot traffic outside the restaurant. To accomplish this, a simple webcam is installed which sends a constant stream of images of the foot traffic on the street.
+> 
+> Utilizing langgraph and Llama 3.2 vision you will implement an example solution to this problem.
 
 Let's start by enhancing our LangGraph workflow to include image processing capabilities.
 

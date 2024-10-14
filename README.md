@@ -17,6 +17,7 @@ Tech Cafe is a simple frontend for a cafe app, representing a digital version of
 
 1. **Clone the Repository**
 
-   ```bash
-   git clone <repo-url>
-   cd tech-cafe
+```bash
+git clone <repo-url>
+cd tech-cafe
+```
