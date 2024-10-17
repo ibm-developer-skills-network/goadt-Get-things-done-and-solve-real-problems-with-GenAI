@@ -74,10 +74,10 @@ Run the following command in the terminal to clone the repository:
 
 ```bash
 # Clone the repository
-git clone https://github.com/bsteinfeld/sturdy-disco.git
+git clone https://github.com/ibm-developer-skills-network/goadt-Get-things-done-and-solve-real-problems-with-GenAI.git
 
 # Change your current directory to the cloned repository
-cd sturdy-disco
+cd goadt-Get-things-done-and-solve-real-problems-with-GenAI
 ```
 
 ## Explore the Project Structure
@@ -207,7 +207,7 @@ npm install @langchain/langgraph @langchain/core
 
 Now create a new file for our Hello World graph.
 
-::openFile{path="sturdy-disco/src/helloWorldGraph.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/helloWorldGraph.ts"}
 
 ### Importing LangGraph Modules
 
@@ -400,7 +400,7 @@ The workflow will just have a single `generateMessage` node and look like this:
 
 Let's start by creating a new file called `graph.ts` to add all of the LangGraph logic to:
 
-::openFile{path="sturdy-disco/src/graph.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/graph.ts"}
 
 Let's start by importing the necessary modules and defining our interfaces:
 
@@ -510,7 +510,7 @@ npm install @langchain/community
 
 Create a new file called `llm.ts` in the `src` directory:
 
-::openFile{path="sturdy-disco/src/llm.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/llm.ts"}
 
 Let's start by importing the necessary modules and setting up our LLM:
 
@@ -646,7 +646,7 @@ Now that we have our LangGraph workflow and LLM integration set up, we need to u
 
 Open the `src/controllers/coffeeController.ts` file:
 
-::openFile{path="sturdy-disco/src/controllers/coffeeController.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/controllers/coffeeController.ts"}
 
 Update the imports at the top of the file:
 
@@ -690,7 +690,7 @@ The final step in our AI enhancement is to update the frontend to display the pe
 
 Open the `src/public/js/main.js` file:
 
-::openFile{path="sturdy-disco/src/public/js/main.js"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/public/js/main.js"}
 
 Update the part of the code that handles the response from the backend when calling the `sendOrderToBackend` function.
 
@@ -760,7 +760,7 @@ Our first task is to implement an image processing feature that will analyze ima
 
 Open the `src/graph.ts` file:
 
-::openFile{path="sturdy-disco/src/graph.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/graph.ts"}
 
 Add the following imports at the top of the file:
 
@@ -833,7 +833,7 @@ By integrating Llama 3.2 Vision into our application, we can:
 
 Open the `src/llm.ts` file:
 
-::openFile{path="sturdy-disco/src/llm.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/llm.ts"}
 
 2. Add the following imports at the top of the file:
 
@@ -923,7 +923,7 @@ It's important to note that in our example we are just simulating a webcam feed 
 
 Open the `src/server.ts` file:
 
-::openFile{path="sturdy-disco/src/server.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/server.ts"}
 
 Add the following imports at the top of the file:
 
@@ -954,7 +954,7 @@ This cron job will run every minute. It will scan the cafe image, and if there a
 
 Now, let's implement the `setCoffeePrice` function. Open the `src/controllers/coffeeController.ts` file:
 
-::openFile{path="sturdy-disco/src/controllers/coffeeController.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/controllers/coffeeController.ts"}
 
 Add the following function to the file:
 
@@ -980,7 +980,7 @@ Now that we have implemented dynamic pricing on the backend, we need to update o
 
 Open the `src/public/js/main.js` file:
 
-::openFile{path="sturdy-disco/src/public/js/main.js"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/public/js/main.js"}
 
 2. Modify the `DOMContentLoaded` event listener to periodically fetch the latest coffee prices:
 
@@ -1028,7 +1028,7 @@ This modification will fetch the latest coffee prices every 30 seconds and updat
 
 To make the price changes more noticeable, let's add a simple animation when prices change. Add the following CSS to `src/public/css/styles.css`:
 
-::openFile{path="sturdy-disco/src/public/css/styles.css"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/public/css/styles.css"}
 
 ```css
 @keyframes priceChange {
@@ -1121,7 +1121,7 @@ Let's start by modifying our backend to support this new workflow.
 
 First, we'll update our `graph.ts` file to support the HITL workflow:
 
-::openFile{path="sturdy-disco/src/graph.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/graph.ts"}
 
 Add the following code to the existing `graph.ts` file:
 
@@ -1190,7 +1190,7 @@ Now, let's create an admin interface to review and approve sale suggestions:
 
 Create a new file `src/public/admin.html`:
 
-::openFile{path="sturdy-disco/src/public/admin.html"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/public/admin.html"}
 
 Add the following content:
 
@@ -1225,7 +1225,7 @@ Add the following content:
 
 2. Create a new file `src/public/js/admin.js`:
 
-::openFile{path="sturdy-disco/src/public/js/admin.js"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/public/js/admin.js"}
 
 Add the following content:
 
@@ -1284,7 +1284,7 @@ Now, let's create the backend routes to handle admin actions:
 
 Create a new file `src/routes/adminRoutes.ts`:
 
-::openFile{path="sturdy-disco/src/routes/adminRoutes.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/routes/adminRoutes.ts"}
 
 Add the following content:
 
@@ -1304,7 +1304,7 @@ export default router;
 
 Create a new file `src/controllers/adminController.ts`:
 
-::openFile{path="sturdy-disco/src/controllers/adminController.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/controllers/adminController.ts"}
 
 Add the following content:
 
@@ -1342,7 +1342,7 @@ export const rejectSale = async (req: Request, res: Response) => {
 
 Update `src/server.ts` to include the new admin routes:
 
-::openFile{path="sturdy-disco/src/server.ts"}
+::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/server.ts"}
 
 Add the following lines:
 
