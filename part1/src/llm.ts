@@ -1,12 +1,10 @@
 import { PromptTemplate } from '@langchain/core/prompts';
 import { WatsonxAI } from "@langchain/community/llms/watsonx_ai";
 
-export const PROJECT_ID = "5eddaf93-70b7-4ff3-8b30-583d1ad188fe"
-export const IBMCLOUD_API_KEY = process.env.IBMCLOUD_API_KEY
+export const PROJECT_ID = "skills-network"
 
-// Initialize the WatsonxAI model
 const model = new WatsonxAI({
-  ibmCloudApiKey: IBMCLOUD_API_KEY,
+  // ibmCloudApiKey: "set_when_using_your_own_account",
   projectId: PROJECT_ID,
   modelId: "meta-llama/llama-3-2-90b-vision-instruct",
   modelParameters: {
@@ -61,10 +59,10 @@ export async function generateMessage(name: string, order: any): Promise<string>
   const promptText = await prompt.format({
     name: name,
     coffeeName: order.coffeeName,
-    creams: order.customizations.creams,
-    milk: order.customizations.milk,
-    sugars: order.customizations.sugars,
-    sweeteners: order.customizations.sweeteners,
+    creams: order.customizations.creams ?? 0,
+    milk: order.customizations.milk ?? 0,
+    sugars: order.customizations.sugars ?? 0,
+    sweeteners: order.customizations.sweeteners ?? 0,
     whippedCream: order.customizations.whippedCream ? 'Yes' : 'No',
   });
 

@@ -1,7 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import axios from 'axios';
-import qs from 'qs';
 
 // Function to convert image file to base64 with correct data URI format
 export function imageToBase64(filePath: string): string {
@@ -30,31 +28,3 @@ export function imageToBase64(filePath: string): string {
 
     return `data:${mimeType};base64,${base64Image}`;
 }
-
-export const getToken = async () => {
-    const WATSON_TOKEN = process.env.WATSONX_TOKEN;
-    if (WATSON_TOKEN) {
-        return WATSON_TOKEN;
-    }
-
-    const data = qs.stringify({
-      'grant_type': 'urn:ibm:params:oauth:grant-type:apikey',
-      'apikey': process.env.IBMCLOUD_API_KEY
-    });
-
-    const config = {
-      method: 'post',
-      url: 'https://iam.cloud.ibm.com/identity/token',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      data: data
-    };
-
-    try {
-      const response = await axios(config);
-      return response?.data?.access_token;
-    } catch (error) {
-      console.error('Error fetching token:', error);
-    }
-};

@@ -18,12 +18,12 @@ const CoffeeAnnotation = Annotation.Root({
 });
 
 const stepGenerateMessage = async (state: typeof CoffeeAnnotation.State) => {
-    let coffeeOptions = {
+    const coffeeOptions = {
         coffeeName: state.coffeeName,
         customizations: state.customizations
     }
 
-    let message = await generateMessage(state.customerName, coffeeOptions)
+    const message = await generateMessage(state.customerName, coffeeOptions)
     state.message = message;
 
     return state;

@@ -1,10 +1,10 @@
 import axios from 'axios';
-import qs from 'qs'; // Query string library to format the POST data
+import { getToken } from './utils';
 
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { WatsonxAI } from "@langchain/community/llms/watsonx_ai";
 
-export const PROJECT_ID = "5eddaf93-70b7-4ff3-8b30-583d1ad188fe"
+export const PROJECT_ID = process.env.PROJECT_ID
 export const IBMCLOUD_API_KEY = process.env.IBMCLOUD_API_KEY
 
 // Initialize the WatsonxAI model
@@ -87,29 +87,6 @@ export async function scanImage(imageURI: string): Promise<number> {
 
   const systemPrompt = `Return how many people you see in the image. Only return the number with no punctuation or quotes and be as accurate as possible.`
 
-  const getToken = async () => {
-    const data = qs.stringify({
-      'grant_type': 'urn:ibm:params:oauth:grant-type:apikey',
-      'apikey': IBMCLOUD_API_KEY
-    });
-
-    const config = {
-      method: 'post',
-      url: 'https://iam.cloud.ibm.com/identity/token',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      data: data
-    };
-
-    try {
-      const response = await axios(config);
-      return response?.data?.access_token;
-    } catch (error) {
-      console.error('Error fetching token:', error);
-    }
-  };
-
   const accessToken = await getToken();
 
   const url = "https://us-south.ml.cloud.ibm.com/ml/v1/text/chat?version=2023-05-29";
@@ -122,7 +99,7 @@ export async function scanImage(imageURI: string): Promise<number> {
   const body = {
     messages: [
       {
-        role: "system",
+        role: "user",
         content: [
           {
             type: "text",

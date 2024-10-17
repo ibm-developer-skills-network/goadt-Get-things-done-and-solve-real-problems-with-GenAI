@@ -1,8 +1,10 @@
 ::page{title="Get things done and solve real problems with GenAI"}
 
-Often I hear that LLMs and AI are overblown and nothing more than glorified chatbots or PDF summarizers. Perhaps you've even dabbled in creating your own chatbot or RAG sytem and questioned if AI is truly _just hype_.
+Often, I hear that LLMs and AI are overblown and nothing more than glorified chatbots or PDF summarizers. Perhaps you've even dabbled in creating your own chatbot or RAG sytem and questioned if AI is truly _just hype_.
 
-This lab will walk you through various hands-on examples, each adding real value to a [fake] coffee company, Tech Cafe. We will cover various technologies and techniques to help you start moving beyond chatbots and implementing the true value of LLMs.
+But what if we could harness the true power of AI to solve real-world problems, add tangible value to businesses, and create applications that go beyond the ordinary?
+
+In this Guided Project, we’ll embark on a hands-on journey, enhancing a [fictional] coffee company called Tech Cafe. Through various examples, we’ll demonstrate how to integrate advanced AI features into real applications. We’ll cover cutting-edge technologies and techniques that will help you move beyond basic chatbots and unlock the true potential of LLMs.
 
 ## Learning Objectives
 
@@ -13,20 +15,27 @@ By the end of this Guided Project, you will be able to:
 3. Implement image processing using a Large Language Model (LLM)
 4. Set up a cron job to periodically update system state
 5. Implement dynamic pricing based on AI-driven insights
-6. Implement Human-In-The-Loop (HITL)
+6. Implement Human-In-The-Loop (HITL) mechanisms
 
 Let's start by understanding the key components we'll be working with.
 
 ## Understanding LangGraph
 
-LangGraph is a library that allows us to create flexible workflows for language models. It provides a way to structure the flow of data and operations when working with LLMs.
+LangGraph is a library that allows us to create flexible and modular workflows. It provides a structured way to define the flow of data and operations when working with LLMs, enabling us to build complex applications with ease.
 
 ## Large Language Models (LLMs)
 
-Large Language Models are AI models trained on vast amounts of text data. They can generate human-like text based on the input they receive. In our project, we'll mainly be using llama3.2 and granite models provided by watsonx.ai.
+Large Language Models are AI models trained on vast amounts of text data. They can generate human-like text based on the input they receive, making them incredibly versatile for a variety of applications—from generating creative content to understanding and processing human language.
 
-TODO: fix this segue
-In the next steps, we'll implement these concepts to enhance our Tech Cafe application.
+In our project, we’ll primarily use the latest Llama 3.2 and Granite models provided by watsonx.ai. These models offer advanced capabilities that we’ll leverage to enhance our Tech Cafe application.
+
+## Bringing it all together
+
+By combining the structured workflow management of LangGraph with the powerful capabilities of LLMs, we’re equipped to build sophisticated AI-driven features that can revolutionize applications.
+
+In the upcoming steps, we’ll dive into practical implementations, transforming a demo app; Tech Cafe; into an intelligent, AI-enhanced application. Get ready to see how these technologies can solve real problems and add real value!
+
+In the next section, we’ll introduce Tech Cafe and explore the challenges we’re aiming to solve.
 
 ::page{title="Introducing Tech Cafe and Our Challenges"}
 
@@ -38,7 +47,6 @@ Tech Cafe is a bustling coffee chain with multiple locations across the city. Re
 
 - Personalized Customer Experience: With an ever-increasing customer base, providing a personalized touch to each order has become a significant challenge.
 - Dynamic Pricing Strategy: Adjusting prices in real-time based on factors like cafe occupancy and demand is complex but essential for maximizing profitability.
-- Efficient Order Processing: Managing high volumes of orders without compromising service quality requires a more streamlined system.
 - Adaptive Marketing: Staying ahead in a competitive market means continuously adapting our offerings and promotions based on customer preferences and trends.
 
 ## Our Solution: An AI-Powered Application
@@ -47,10 +55,7 @@ To tackle these challenges, we’re developing an AI-enhanced application that r
 
 - Enhance Personalization: Use AI to generate personalized messages and recommendations for customers.
 - Implement Dynamic Pricing: Adjust prices based on real-time data like cafe occupancy.
-- Streamline Operations: Automate order processing to improve efficiency and reduce errors.
 - Enable Human-in-the-Loop: Allow human oversight in AI decision-making processes for better control and accuracy.
-
-<<Figure: The user interface of the Tech Cafe application, showcasing the seamless ordering experience.>>
 
 In the next section, we’ll set up the project by cloning the repository and running the base application. Let’s get started!
 
@@ -72,30 +77,35 @@ Run the following command in the terminal to clone the repository:
 git clone https://github.com/bsteinfeld/sturdy-disco.git
 
 # Change your current directory to the cloned repository
-cd pqrkh-adapting_to_rapid_advances_in_llms
+cd sturdy-disco
 ```
 
 ## Explore the Project Structure
 
 Before we dive into coding, let’s take a moment to understand the structure of the project. Familiarizing yourself with the project layout will make it easier to navigate and modify the code.
 
-
-TODO: Double check with actual structure and update respectively
-
 Project Structure Overview:
 
 - **src/**: Contains the source code of the application.
-  - **server.ts**: The main application code that runs the express application
+  - **server.ts**: The main application code that runs the express application.
+  - **utils.ts**: Provides some helper functions.
   - **controllers/**: Holds the controller files responsible for handling HTTP requests and responses.
   - **routes/**: Defines the URL mappings to the corresponding controllers.
   - **public/**: Contains static assets like HTML, CSS, and JavaScript files that are served directly to the client.
     - **css/**: Stylesheets for the application.
     - **js/**: Client-side JavaScript scripts.
     - **images/**: Images used in the application.
-    - **index.html**: The main HTML of the app
-- **package.json**: Lists the project dependencies and scripts.
+    - **index.html**: The main HTML of the app.
+- **partX/**: Contains snapshots of the code for this Guided Project.
+- **package.json**: Lists the project dependencies and scripts. The following scripts are provided:
+  - `npm run build`: Runs `tsc` building the typescript application.
+  - `npm start`: Start the _built_ application (depends on the aforementioned build).
+  - `npm run dev`: Starts the appliction in dev mode which will automatically restart whenever a change is detected (uses: `nodemon`).
+  - `npm run console`: Starts an interactive shell using `ts-node`. This is useful to test and debug your application.
 - **tsconfig.json**: Configuration file for TypeScript compiler options.
 - **README.md**: Provides information about the project.
+
+Note the `partX` folders as these provide snapshots of various parts of this Guided Project. Feel free to experiment and change any aspect of the code, as you can always use one of these folders to restore the state of the project.
 
 ## Install Dependencies
 
@@ -105,10 +115,7 @@ The application relies on several Node.js packages. We need to install these dep
 npm install
 ```
 
-This command reads the package.json file and installs all the packages listed under dependencies and devDependencies.
-What This Does:
--	Downloads the necessary packages like Express, TypeScript, and other utilities.
--	Prepares the environment to run and build the application.
+This will install `express`, `nodemon`, `ts-node` and `typescript`.
 
 ## Run the Base Application
 
@@ -118,10 +125,7 @@ Now that we’ve installed the dependencies, we’re ready to run the applicatio
 npm run dev
 ```
 
-What This Does:
--	Compiles the TypeScript code into JavaScript using the tsc compiler.
--	Starts the Express server defined in the src/server.ts file.
--	Listens for incoming HTTP requests on a specified port (default is 3000).
+This command starts the appliction on port 3000 (automatically restart whenever a change is detected).
 
 Since we’re running the application in a Cloud IDE environment, we need to expose the port to access it via a browser.
 Click the button below to open your app:
@@ -131,22 +135,20 @@ Click the button below to open your app:
 ##	Explore the base application
 You should now see the Tech Cafe application running in your browser. Feel free to navigate through the app to understand its current functionality.
 
-TODO: Add GIF image
+![Tech Cafe Demo](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/vq8xXQfL0cGpmm8Ke2JItw/tech-cafe-demo1.gif "Tech Cafe Demo")
 
 Features to Notice:
 -	Coffee Menu: Displays a list of available coffee options.
 -	Customization Options: Allows you to customize your coffee (e.g., add sugar, milk).
 -	Order Submission: Lets you place an order and receive a confirmation.
 
-
-TODO: Tell user to stop the server CTRL+C
-
+To stop the application press `CTRL + C` in the terminal window.
 
 Now that you have the base application running and understand its structure, you’re all set to start enhancing it with AI-powered features in the upcoming steps.
 
 Let’s continue our journey to transform Tech Cafe into an intelligent, AI-enhanced application!
 
-::page{title="Creating a Simple Hello World Graph with LangGraph"}
+::page{title="What is LangGraph?"}
 
 Before we begin enhancing our Cafe application lets first dive into the basics of LangGraph by creating a simple "Hello World" graph. This example will help you understand the core concepts of LangGraph, including creating graphs, defining annotations, and invoking the graph. By the end of this step, you’ll run the graph and you'll also create a visual representation of it!
 
@@ -156,17 +158,54 @@ LangGraph is a powerful library that allows you to define and execute workflows 
 
 ## Why LangGraph?
 
-TODO: put in images show traditional code, a simple chain, and then a graph (with conditionals and stuff). Then describe how we both get more control of the workflow which gives us lots of power, but also that each of the nodes are easily pluggable modules to keep the code easy to work with and adaptable (which is ever so important for llms).
+When building AI applications, especially those involving LLMs, you often need to manage complex workflows that include various steps like data preprocessing, model invocation, post-processing, error handling, and conditional logic. Traditional linear code or simple chaining might suffice for straightforward tasks, but as your application grows in complexity, these approaches can become unwieldy and hard to maintain.
 
-## Installing the langgraph libraries
+
+Consider a traditional code workflow:
+
+```javascript
+// Traditional linear code
+function processData(input) {
+  const preprocessed = preprocess(input);
+  const modelOutput = invokeModel(preprocessed);
+  const result = postprocess(modelOutput);
+  return result;
+}
+```
+
+This linear flow works well for simple tasks but lacks flexibility. Now imagine you need to handle conditional branching, retries, or integrate human-in-the-loop steps. The code quickly becomes tangled with nested conditionals and callbacks.
+
+LangGraph addresses these challenges by allowing you to represent your workflows as graphs. Each node in the graph represents a discrete unit of work (a function or operation), and edges define the flow between these nodes, including conditional paths.
+
+Here’s an illustrative image of a LangGraph workflow:
+
+![LangGraph Example](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/dBlLvR1TUYOfJ6lQvHv9yg/langgraph-example.jpeg "LangGraph Example")
+
+## Benefits of using LangGraph
+
+- **Modularity**: Each node is a pluggable module, making your codebase more organized and reusable.
+- **Flexibility**: Easily add, remove, or rearrange nodes without disrupting the entire workflow.
+- **Conditional Logic**: Implement complex branching and decision-making processes within your workflow.
+- **Error Handling**: Define alternative paths in case of failures or exceptions.
+- **Maintainability**: Visual representation of workflows makes it easier to understand and maintain the code.
+
+This graph-based approach is especially valuable when working with LLMs because:
+
+- Experimentation: You can experiment with different model configurations or preprocessing steps by swapping nodes.
+- Scalability: As your AI application grows, the graph can be extended without rewriting existing code.
+- Adaptability: Quickly adapt to new requirements or integrate additional features like logging, monitoring, or human-in-the-loop interactions.
+
+By embracing LangGraph, you gain more control over your workflows, leading to more robust and adaptable AI applications.
+
+::page{title="Creating a Simple Hello World Graph with LangGraph"}
+
+Let's start by installing the LangGraph libraries:
 
 ```bash
 npm install @langchain/langgraph @langchain/core
 ```
 
-### Setting Up the Hello World Graph
-
-Let’s start by creating a new file for our Hello World graph.
+Now create a new file for our Hello World graph.
 
 ::openFile{path="sturdy-disco/src/helloWorldGraph.ts"}
 
@@ -177,6 +216,11 @@ First, we’ll import the necessary modules from LangGraph.
 ```typescript
 import { Annotation, StateGraph, START, END } from '@langchain/langgraph';
 ```
+
+- **Annotation**: Defines the structure of the data (state) flowing through your graph—essentially a blueprint for the information your workflow will handle.
+- **StateGraph**: Represents the workflow graph itself, allowing you to create and manage a sequence of connected steps (nodes) in your application.
+- **START and END**: Special constants that mark the beginning and end points of your graph, indicating where the workflow starts and finishes.
+
 
 ### Defining Annotations
 
@@ -229,7 +273,9 @@ const combineMessage = async (state: typeof HelloWorldAnnotation.State) => {
 
 ### Creating the Graph
 
-Now, we’ll define the graph structure by adding nodes and edges.
+Now, we’ll define the graph by adding nodes and edges to represent our workflow.
+
+Here’s the code to construct the graph:
 
 ```typescript
 const helloWorldGraph = new StateGraph(HelloWorldAnnotation)
@@ -242,6 +288,19 @@ const helloWorldGraph = new StateGraph(HelloWorldAnnotation)
   .addEdge('combineMessage', END)
   .compile();
 ```
+
+Nodes are steps linked to functions:
+
+- `createGreeting`: Generates a greeting.
+- `setRecipient`: Sets the message recipient.
+- `combineMessage`: Combines the greeting and recipient.
+
+Edges define the execution flow between nodes:
+
+- `START` ➔ `createGreeting`
+- `createGreeting` ➔ `setRecipient`
+- `setRecipient` ➔ `combineMessage`
+- `combineMessage` ➔ `END`
 
 ### Invoking the Graph
 
@@ -264,8 +323,6 @@ npx ts-node src/helloWorldGraph.ts
 
 You should see output similar to:
 
-TODO: put an image?
-
 > Step 1: Created greeting.
 Step 2: Set recipient.
 Step 3: Combined message.
@@ -277,8 +334,7 @@ This indicates that our graph executed successfully.
 
 LangGraph allows us to generate a visual diagram of the graph.
 
-
-First let's save `diagram.mmd` to save a mermaid representation of our graph:
+There are multiple ways to do this, but we will do it in two parts. First we save a mermaid representation of our graph (as `diagram.mmd`):
 
 ```typescript
 import fs from 'fs';
@@ -294,20 +350,31 @@ drawGraph()
 
 Then install the mermaid-cli which we'll use to convert the `mmd` to a `png`:
 
-``bash
+```bash
+# Install mermaid-cli
 sudo npm install -g @mermaid-js/mermaid-cli
 ```
 
+Install other dependencies:
+
+```bash
+# Install other dependencies
+npx -y puppeteer browsers install chrome-headless-shell
+```
+
 Now convert the file:
-``bash
+
+```bash
+# Generate diagram.mmd
+npx ts-node src/helloWorldGraph.ts
+
+# Convert diagram.mmd to diagram.png
 mmdc -i diagram.mmd -o diagram.png
 ```
 
 Now you can download this png to view it.
 
-TODO: finish this part. add in image
-
-Figure: Visual representation of the Hello World graph.
+![Hello World Graph](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/_t5QhHIAg67HNSnErheSug/Skills%20Network%20Labs%20Diagram%20-1-.png "Hello World Graph")
 
 Congratulations! You’ve successfully created a simple LangGraph workflow, invoked it, and generated a visual representation. This exercise introduced you to the core concepts of LangGraph:
 
@@ -318,20 +385,20 @@ Congratulations! You’ve successfully created a simple LangGraph workflow, invo
 
 Let’s continue enhancing Tech Cafe with advanced AI features!
 
-::page{title="Setting Up the LangGraph Workflow"}
+::page{title="Setting Up TechCafe's First Workflow"}
 
 Now that you understand the basics, let's setup our first workflow for Tech Cafe.
 
 To start let's create a simple workflow that will take a coffee order as an input and will output a fun customized message we can print on the coffee.
 
-TODO: Put graph image here
+The workflow will just have a single `generateMessage` node and look like this:
+
+![generateMessage Workflow](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/iPChFTlvY5zLMm4tdXUNnw/coffee-message-graph.png "generateMessage Workflow")
 
 
 ## Implementing the LangGraph Workflow
 
-Let's start by creating our LangGraph workflow. We'll do this step-by-step.
-
-First, create a new file called `graph.ts` in the `src` directory:
+Let's start by creating a new file called `graph.ts` to add all of the LangGraph logic to:
 
 ::openFile{path="sturdy-disco/src/graph.ts"}
 
@@ -344,7 +411,7 @@ import { generateMessage } from './llm';
 
 Let's break this down:
 
-- We import `Annotation`, `StateGraph`, `START`, and `END` from LangGraph. These are the building blocks we'll use to create our workflow.
+- As with the previous example we import `Annotation`, `StateGraph`, `START`, and `END` from LangGraph.
 - We import `generateMessage` from a file called `llm.ts` that we'll create later. This function will handle the interaction with our LLM.
 
 Next, let's define our annotation structure:
@@ -374,7 +441,7 @@ This `CoffeeAnnotation` defines the structure of the data that will flow through
 - `customizations`: The customizations for the coffee (using our `CoffeeCustomizations` interface)
 - `message`: The AI-generated message (which will be populated later in the workflow)
 
-Now that we have our annotation structure, let's define the step in our workflow and create the graph.
+Now let's define the step functions in our workflow.
 
 Add the following code to `graph.ts`:
 
@@ -385,9 +452,11 @@ const stepGenerateMessage = async (state: typeof CoffeeAnnotation.State) => {
         customizations: state.customizations
     }
 
+    // Call the LLM
     const message = await generateMessage(state.customerName, coffeeOptions)
     state.message = message;
 
+    // Return the state
     return state;
 }
 ```
@@ -420,6 +489,11 @@ Let's examine this code:
 - We add edges to connect the START of the graph to our "generateMessage" node, and from there to the END of the graph.
 - We compile the graph to finalize its structure.
 - We export a `runCoffeeMessageGraph` function that takes an initial input and invokes our graph with that input.
+
+Once again this code generates a graph that looks like this:
+
+![generateMessage Workflow](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/iPChFTlvY5zLMm4tdXUNnw/coffee-message-graph.png "generateMessage Workflow")
+
 
 This completes our LangGraph workflow setup. In the next step, we'll implement the LLM integration to generate our personalized messages.
 
@@ -541,6 +615,28 @@ Let's break down this `generateMessage` function:
 
 This function is what we'll call from our LangGraph workflow to generate the personalized message for each order.
 
+We can quickly test this via the interactive console.
+
+First let's open the interactive console:
+
+```bash
+npm run console
+```
+
+Now within this console let's import the `runCoffeeMessageGraph` function and run it with example code:
+
+```bash
+import { generateMessage } from './src/llm'
+
+generateMessage("bradley", { customizations: { creams: 2, sugars: 2 } }).then(r => console.log(r))
+```
+
+Now to exit the interactive prompt you can enter `.exit` or press `CTRL+C` twice:
+
+```bash
+.exit
+```
+
 With this, we've completed the setup of our LLM integration. Now, let's update our backend to use this new AI-powered functionality.
 
 
@@ -596,7 +692,9 @@ Open the `src/public/js/main.js` file:
 
 ::openFile{path="sturdy-disco/src/public/js/main.js"}
 
-Update the part of the code that handles the response from the backend when calling the `sendOrderToBackend` function. On **line 206** update the following:
+Update the part of the code that handles the response from the backend when calling the `sendOrderToBackend` function.
+
+On **LINE 206** update the following:
 
 ```javascript
 // const message = `Your ${window.currentOrder.coffeeName} is ready.`
@@ -607,32 +705,56 @@ The key change here is that we're now using `data.message` as the message to dis
 
 With these changes, our frontend will now display the AI-generated personalized message for each order.
 
-Congratulations! You've successfully enhanced Tech Cafe with AI-powered personalization. Users will now receive unique, personalized messages with each coffee order, creating a more engaging and memorable experience.
+To run the code run the following to start the server:
 
 ```bash
 npm run dev
 ```
 
+And test the updates via:
+
 ::startApplication{port="3000" display="internal" name="Open Tech Cafe App" route="/"}
 
+![Tech Cafe with LLM Demo](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/2QRp_wdULeuv0dAj7cdd9A/animwithllmmessage.gif "Tech Cafe with LLM Demo")
 
-TODO: Also add a screenshot/gif
+Congratulations! You've successfully enhanced Tech Cafe with AI-powered personalization. Users will now receive unique, personalized messages with each coffee order, creating a more engaging and memorable experience.
+
+::page{title=“Enhancing Tech Cafe with Advanced AI Features”}
+
+Up until now, you've just scratching the surface of what’s possible.
+
+In this section, we’ll take Tech Cafe to the next level by incorporating more advanced AI features. We’ll delve into image processing, create more complex graphs, and implement a dynamic pricing system based on real-time foot traffic outside the cafe.
+
+## The Challenge: Dynamic Pricing Based on Foot Traffic
+
+Tech Cafe is situated in bustling locations where foot traffic can vary significantly throughout the day. The management wants to capitalize on peak times and encourage more customers during slower periods by adjusting coffee prices dynamically. To achieve this, they’ve installed a simple webcam that provides a constant stream of images showing the foot traffic outside the cafe.
+
+Our goal is to:
+
+- **Analyze Foot Traffic**: Use AI to process images from the webcam and estimate the number of people passing by.
+- **Dynamic Pricing**: Adjust coffee prices in real-time based on the estimated foot traffic.
+- **Advanced Workflows**: Utilize LangGraph to manage the complex workflow involving image processing, AI inference, and price adjustments.
+
+By implementing this solution, Tech Cafe can optimize pricing strategies, attract more customers, and maximize profits.
+
+How We’ll Achieve This
+
+We will:
+
+1. Implement Image Processing with LLMs: Use the Llama 3.2 Vision model to analyze images and estimate foot traffic.
+2. Enhance LangGraph Workflows: Create a more complex LangGraph workflow that incorporates image processing steps.
+3. Set Up Periodic Updates: Use cron jobs to periodically process images and update pricing.
+4. Implement Dynamic Pricing: Adjust coffee prices in the application based on the AI’s analysis.
+5. Introduce Human-in-the-Loop (HITL): Allow human administrators to approve or override AI-driven pricing decisions.
+
+By the end of this section, you’ll have hands-on experience integrating advanced AI features into a real application, showcasing the true power and versatility of LLMs and LangGraph.
+
+Let’s Get Started!
+
+In the next step, we’ll begin by enhancing our LangGraph workflow to include image processing capabilities.
 
 
-::page{title="Enhancing Tech Cafe with more advanced AI Features"}
-
-TODO: Make this suck less
-
-In the following section, we'll be taking Tech Cafe to the next level by incorporating more advanced AI features. We'll be working with images, creating more complex graphs, and implementing a dynamic pricing system based on cafe occupancy.
-
-> Tech Cafe's coffee shops get a lot of foot traffic and would like to adjust their pricing dynamically depending on the foot traffic outside the restaurant. To accomplish this, a simple webcam is installed which sends a constant stream of images of the foot traffic on the street.
-> 
-> Utilizing langgraph and Llama 3.2 vision you will implement an example solution to this problem.
-
-Let's start by enhancing our LangGraph workflow to include image processing capabilities.
-
-
-::page{title="Implementing Image Processing with LLM"}
+::page{title="Implementing the Image Processing Graph"}
 
 Our first task is to implement an image processing feature that will analyze images of the cafe to determine occupancy. This information will be used to dynamically adjust coffee prices.
 
@@ -694,11 +816,20 @@ This new graph will get the latest image of the cafe, convert it to a base64 str
 In the next step, we'll implement the `scanImage` function in our `llm.ts` file.
 
 
-::page{title="Implementing the scanImage Function"}
+::page{title="Implementing the scanImage LLM Function"}
 
 Now that we've set up our image processing graph, we need to implement the `scanImage` function that will use our LLM to analyze the image.
 
-TODO: Add mention of llama 3.2
+## Llama 3.2 Vision Model
+
+Llama 3.2 Vision is an advanced Large Language Model (LLM) that extends text-based capabilities with image understanding. It can process and analyze images, allowing us to extract meaningful information from visual data. In our case, we’ll use it to count the number of people in an image captured by the cafe’s webcam.
+
+By integrating Llama 3.2 Vision into our application, we can:
+
+- Automate Image Analysis: Remove the need for manual counting or separate image processing systems.
+- Simplify Workflow: Incorporate image analysis directly into our LangGraph workflow with ease.
+
+## Implement scanImage
 
 Open the `src/llm.ts` file:
 
@@ -708,13 +839,11 @@ Open the `src/llm.ts` file:
 
 ```typescript
 import axios from 'axios';
-import qs from 'qs';
+import { getToken } from './utils';
 ```
 
 Now, let's implement the `scanImage` function.
 
-
-TODO: Move getToken to utils
 
 _Note: At the time of writing the Llama 3.2 vision models are not fully supported in the official watsonx.ai client so we are hitting the API directly_
 
@@ -723,29 +852,6 @@ export async function scanImage(imageURI: string): Promise<number> {
   console.log('STARTING SCAN');
 
   const systemPrompt = `Return how many people you see in the image. Only return the number with no punctuation or quotes and be as accurate as possible.`;
-
-  const getToken = async () => {
-    const data = qs.stringify({
-      'grant_type': 'urn:ibm:params:oauth:grant-type:apikey',
-      'apikey': IBMCLOUD_API_KEY
-    });
-
-    const config = {
-      method: 'post',
-      url: 'https://iam.cloud.ibm.com/identity/token',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      data: data
-    };
-
-    try {
-      const response = await axios(config);
-      return response?.data?.access_token;
-    } catch (error) {
-      console.error('Error fetching token:', error);
-    }
-  };
 
   const accessToken = await getToken();
 
@@ -759,7 +865,7 @@ export async function scanImage(imageURI: string): Promise<number> {
   const body = {
     messages: [
       {
-        role: "system",
+        role: "user",
         content: [
           {
             type: "text",
@@ -1276,8 +1382,39 @@ Open another browser tab. Check if the coffee prices are updated when you approv
 
 Congratulations! You have successfully implemented Human in the Loop functionality in Tech Cafe. This addition allows for more accurate and controlled dynamic pricing, combining the power of AI with human expertise.
 
-TODO: Add a conclusion here
+::page{title=“Conclusion and Next Steps”}
 
-TODO: Add a last page
+## Wrapping Up
+
+Congratulations on completing this Guided Project! Throughout this journey, you’ve explored the practical applications of Large Language Models (LLMs) and LangGraph to solve real-world problems. Let’s recap what you’ve accomplished:
+
+- Integrated LLMs into a Node.js Application: You learned how to incorporate powerful language models into your application, enabling advanced text generation and processing capabilities.
+- Implemented LangGraph Workflows: You explored how to use LangGraph to create modular, flexible, and maintainable workflows, handling complex logic with ease.
+- Processed Images with LLMs: By leveraging the Llama 3.2 Vision model, you extended AI capabilities to include image analysis, demonstrating the versatility of LLMs beyond text.
+- Set Up Periodic Tasks with Cron Jobs: You automated processes by scheduling tasks, such as updating system states and analyzing data at regular intervals.
+- Implemented Dynamic Pricing Based on AI Insights: Using real-time data and AI analysis, you created a dynamic pricing system that adjusts based on foot traffic, showcasing how AI can drive business decisions.
+- Incorporated Human-In-The-Loop (HITL): You enhanced your application with HITL mechanisms, allowing human oversight and intervention to improve AI decision-making processes.
+
+Throughout these steps, you transformed Tech Cafe into an intelligent, AI-enhanced application that not only improves customer experience but also optimizes operations and drives profitability.
+
+## Next Steps
+
+Your journey doesn’t have to end here. Here are some suggestions for further exploration and development:
+
+- Expand AI Capabilities: Explore other use cases where AI can add value, such as personalized marketing, supply chain optimization, or predictive analytics.
+- Integrate Additional Data Sources: Incorporate other real-time data, such as weather conditions or social media trends, to refine your dynamic pricing model.
+- Security and Compliance: Implement security best practices to protect user data and ensure compliance with relevant regulations.
+- Deploy and Scale: Consider deploying your application to a cloud platform and explore scaling options to handle increased load and traffic.
+- Experiment with Other Models: Try integrating different LLMs or AI models to compare performance and capabilities.
+- Community Engagement: Share your project with the developer community, gather feedback, and collaborate on further improvements.
+
+## Final Thoughts
+
+The field of AI is rapidly evolving, and the possibilities are virtually limitless. By mastering the integration of LLMs and tools like LangGraph, you’re well-equipped to innovate and contribute to this exciting domain. Keep experimenting, stay curious, and continue pushing the boundaries of what’s possible with AI.
+
+Thank you for participating in this Guided Project. We hope it has been an enlightening and rewarding experience.
+
+Happy coding!
+
 
 TODO: Add more interactivity at the end of each step.
