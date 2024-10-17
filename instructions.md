@@ -865,6 +865,7 @@ export async function scanImage(imageURI: string): Promise<number> {
   const body = {
     messages: [
       {
+        // Image recognition currently does not support system messages so we need to send instructions as a user message
         role: "user",
         content: [
           {
