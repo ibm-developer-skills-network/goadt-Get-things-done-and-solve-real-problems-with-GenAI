@@ -4,12 +4,10 @@ import { getToken } from './utils';
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { WatsonxAI } from "@langchain/community/llms/watsonx_ai";
 
-export const PROJECT_ID = process.env.PROJECT_ID
-export const IBMCLOUD_API_KEY = process.env.IBMCLOUD_API_KEY
+export const PROJECT_ID = "skills-network";
 
-// Initialize the WatsonxAI model
 const model = new WatsonxAI({
-  ibmCloudApiKey: IBMCLOUD_API_KEY,
+  // ibmCloudApiKey: "set_when_using_your_own_account",
   projectId: PROJECT_ID,
   modelId: "meta-llama/llama-3-2-90b-vision-instruct",
   modelParameters: {
@@ -24,7 +22,6 @@ const model = new WatsonxAI({
     max_tokens: 900
   },
 });
-
 
 
 const systemPrompt = `You are a talented and fun barista working at Tech Cafe.
