@@ -1,5 +1,6 @@
 import { Annotation, StateGraph, MemorySaver, START, END } from '@langchain/langgraph';
 import fs from 'fs';
+
 import { generateMessage, scanImage } from './llm';
 import { imageToBase64 } from './utils';
 import { setCoffeePrice } from './controllers/coffeeController';
@@ -48,7 +49,6 @@ export const printCoffeeMessageGraph = async () => {
     // Save the image to a file
     fs.writeFileSync('coffee_message_graph.png', Buffer.from(arrayBuffer));
 }
-    
 
 
 const ImageAnnotation = Annotation.Root({
@@ -126,7 +126,7 @@ export const updateScanImageGraphState = async (toUpdate: Partial<typeof ImageAn
     await scanImageGraph.updateState(demoStateConfig, { ...currState.values, ...toUpdate });
 };
 
-export const runScanImageGraph = async (initialInput: Partial<typeof ImageAnnotation.State>|null = null) => {
+export const runScanImageGraphState = async (initialInput: Partial<typeof ImageAnnotation.State>|null = null) => {
     for await (const event of await scanImageGraph.stream(initialInput, demoStateConfig)) {
         console.log(`--- ${event.numPeople} ---`);
     }

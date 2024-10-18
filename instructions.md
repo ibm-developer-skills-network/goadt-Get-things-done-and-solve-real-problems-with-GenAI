@@ -631,6 +631,10 @@ import { generateMessage } from './src/llm'
 generateMessage("bradley", { customizations: { creams: 2, sugars: 2 } }).then(r => console.log(r))
 ```
 
+Wait a few second and you should see the result, something like:
+
+> "Bradley, may this cup be the sweet start to a day that's twice as bright as you are"
+
 Now to exit the interactive prompt you can enter `.exit` or press `CTRL+C` twice:
 
 ```bash
@@ -717,6 +721,8 @@ And test the updates via:
 
 ![Tech Cafe with LLM Demo](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/2QRp_wdULeuv0dAj7cdd9A/animwithllmmessage.gif "Tech Cafe with LLM Demo")
 
+To stop the application press `CTRL + C` in the terminal window.
+
 Congratulations! You've successfully enhanced Tech Cafe with AI-powered personalization. Users will now receive unique, personalized messages with each coffee order, creating a more engaging and memorable experience.
 
 ::page{title=“Enhancing Tech Cafe with Advanced AI Features”}
@@ -782,7 +788,7 @@ Next, we'll create two steps for our image processing workflow:
 
 ```typescript
 const stepGetLatestImage = async (state: typeof ImageAnnotation.State) => {
-    const filePath = '../street1.png';
+    const filePath = './src/images/street1.png';
     const base64ImageWithPrefix = imageToBase64(filePath);
     state.imageURI = base64ImageWithPrefix;
     return state;
@@ -812,6 +818,8 @@ export const runScanImageGraph = async (initialInput: Partial<typeof ImageAnnota
 ```
 
 This new graph will get the latest image of the cafe, convert it to a base64 string, and then use our LLM to analyze the image and count the number of people.
+
+![Image Recognition Graph](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/XYf0ruFUclq1Zp5B9tTgmA/image-rec-graph.png "Image Recognition Graph")
 
 In the next step, we'll implement the `scanImage` function in our `llm.ts` file.
 
@@ -921,6 +929,13 @@ Now that we have our image processing workflow set up, let's create a cron job t
 
 It's important to note that in our example we are just simulating a webcam feed by manually updating (or not updating) the `street1.png` file.
 
+First install the `node-cron` package:
+
+```bash
+npm install node-cron
+npm install --save-dev @types/node-cron
+```
+
 Open the `src/server.ts` file:
 
 ::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/server.ts"}
@@ -951,23 +966,6 @@ cron.schedule('* * * * *', async () => {
 ```
 
 This cron job will run every minute. It will scan the cafe image, and if there are more than 20 people in the cafe, it will initiate a 30% off sale by calling `setCoffeePrice(0.7)`.
-
-Now, let's implement the `setCoffeePrice` function. Open the `src/controllers/coffeeController.ts` file:
-
-::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/controllers/coffeeController.ts"}
-
-Add the following function to the file:
-
-```typescript
-export const setCoffeePrice = (amount = 1) => {
-  coffees[0].price = 3 * amount;
-  coffees[1].price = 4 * amount;
-  coffees[2].price = 4.5 * amount;
-  coffees[3].price = 3.5 * amount;
-};
-```
-
-This function will adjust the prices of all coffees by the given amount. An amount of 1 keeps the prices the same, while 0.7 applies a 30% discount.
 
 With these changes, our Tech Cafe application now uses advanced AI features to dynamically adjust prices based on the cafe's occupancy. This creates a more realistic and responsive pricing model that can adapt to real-world conditions.
 
@@ -1026,22 +1024,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 This modification will fetch the latest coffee prices every 30 seconds and update the display accordingly.
 
-To make the price changes more noticeable, let's add a simple animation when prices change. Add the following CSS to `src/public/css/styles.css`:
-
-::openFile{path="goadt-Get-things-done-and-solve-real-problems-with-GenAI/src/public/css/styles.css"}
-
-```css
-@keyframes priceChange {
-  0% { color: inherit; }
-  50% { color: #ff0000; }
-  100% { color: inherit; }
-}
-
-.price-changed {
-  animation: priceChange 1s;
-}
-```
-
 Now, let's modify our `fetchAndDisplayCoffees` function to apply this animation when prices change:
 
 ```javascript
@@ -1063,7 +1045,16 @@ function fetchAndDisplayCoffees() {
             setTimeout(() => priceSpan.classList.remove('price-changed'), 1000);
           }
         } else {
-          // If the coffee item doesn't exist, create it (same as before)
+          const coffeeDiv = document.createElement('div');
+          coffeeDiv.classList.add('coffee-item');
+
+          coffeeDiv.innerHTML = `
+              <h3>${coffee.name}</h3>
+              <p>Price: $${coffee.price.toFixed(2)}</p>
+              <button class="purchase-button" data-coffee-name="${coffee.name}" data-coffee-id="${coffee.id}">Purchase</button>
+          `;
+
+          container.appendChild(coffeeDiv);
         }
       });
     })
@@ -1074,6 +1065,25 @@ function fetchAndDisplayCoffees() {
 ```
 
 These changes will make the price updates more visible to users, creating a more dynamic and engaging experience.
+
+Now let's run the application:
+
+```bash
+npm run dev
+```
+
+Now watch the console. Every minute it will run the graph and update the prices as necessary. Also view your application to see the prices changing in realtime:
+
+::startApplication{port="3000" display="internal" name="Open Tech Cafe App" route="/"}
+
+Initially the image we are checking (`street.png`) will only have a few people so a sale won't be initiated. Switch `street1.png` for `street2.png` to have a sale be initiated.
+
+```bash
+# Simulate a populated street webcam image
+mv -f ./src/images/street2.png ./src/images/street1.png
+```
+
+To stop the application press `CTRL + C` in the terminal window.
 
 Congratulations! You've successfully implemented advanced AI features in Tech Cafe, including image processing for occupancy detection and dynamic pricing based on this real-time data. This creates a more realistic and responsive application that can adapt to changing conditions.
 

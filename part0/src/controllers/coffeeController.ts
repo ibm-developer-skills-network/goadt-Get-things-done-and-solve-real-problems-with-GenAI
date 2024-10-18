@@ -13,6 +13,14 @@ export const getCoffees = (req: Request, res: Response) => {
   res.json(coffees);
 };
 
+// Set the coffee prices
+export const setCoffeePrice = (amount = 1) => {
+  coffees[0].price = 3 * amount;
+  coffees[1].price = 4 * amount;
+  coffees[2].price = 4.5 * amount;
+  coffees[3].price = 3.5 * amount;
+};
+
 // Get coffee by ID
 export const getCoffeeById = (req: Request, res: Response) => {
   const id = parseInt(req.params.id);

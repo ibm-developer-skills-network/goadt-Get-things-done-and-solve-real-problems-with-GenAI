@@ -9,10 +9,10 @@ const coffees = [
   { id: 4, name: 'Americano', price: 3.5 }
 ];
 
-// Get all coffees
+// Set the coffee prices
 export const setCoffeePrice = (amount = 1) => {
   coffees[0].price = 3 * amount;
-  coffees[1].price = 4 * amount
+  coffees[1].price = 4 * amount;
   coffees[2].price = 4.5 * amount;
   coffees[3].price = 3.5 * amount;
 };
