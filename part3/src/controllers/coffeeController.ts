@@ -44,6 +44,6 @@ export const processOrder = async (req: Request, res: Response) => {
   // Respond with order confirmation and the generated message
   res.status(200).json({
     message: graphOutput.message,
-    orderId: Math.floor(Math.random() * 1000000), // Mock order 
+    orderId: Math.floor(Math.random() * 1000000), // Mock order ID
   });
 };

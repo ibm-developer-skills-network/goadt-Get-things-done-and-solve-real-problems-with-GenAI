@@ -34,12 +34,12 @@ function handlePurchase(event) {
   const coffeeId = button.getAttribute('data-coffee-id');
 
   // Prompt the user for their name
-  const userName = prompt('Please enter your name:');
+  const customerName = prompt('Please enter your name:');
 
-  if (userName && userName.trim() !== '') {
+  if (customerName && customerName.trim() !== '') {
     // Store user name and coffee details in a global variable
     window.currentOrder = {
-      userName: userName.trim(),
+      customerName: customerName.trim(),
       coffeeName: coffeeName,
       coffeeId: coffeeId,
       customizations: {
@@ -219,7 +219,7 @@ function openPurchaseModal(message) {
   const purchaseModal = document.getElementById('purchase-modal');
 
   // Set user name and coffee name in the modal
-  document.getElementById('user-name').textContent = window.currentOrder.userName;
+  document.getElementById('user-name').textContent = window.currentOrder.customerName;
   document.getElementById('coffee-message').textContent = message;
   
 

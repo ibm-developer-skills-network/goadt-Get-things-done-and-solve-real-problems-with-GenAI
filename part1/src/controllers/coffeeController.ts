@@ -36,16 +36,10 @@ export const getCoffeeById = (req: Request, res: Response) => {
 // Process an order
 export const processOrder = async (req: Request, res: Response) => {
   const order = req.body;
-
-  console.log('Received Order:', order);
-
   const graphOutput = await runCoffeeMessageGraph(order);
 
-  console.log('OUTPUT:', graphOutput);
-
-  // Respond with order confirmation and the generated message
   res.status(200).json({
     message: graphOutput.message,
-    orderId: Math.floor(Math.random() * 1000000), // Mock order 
+    orderId: Math.floor(Math.random() * 1000000),
   });
 };
