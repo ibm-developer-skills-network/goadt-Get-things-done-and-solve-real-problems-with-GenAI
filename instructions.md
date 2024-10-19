@@ -774,7 +774,7 @@ import { imageToBase64 } from './utils';
 import { scanImage } from './llm';
 ```
 
-Now, let's create a new annotation for our image processing workflow:
+Now scroll to the bottom of the file. Add the following to create a new annotation for our image processing workflow:
 
 ```typescript
 const ImageAnnotation = Annotation.Root({
@@ -954,12 +954,13 @@ cron.schedule('* * * * *', async () => {
     console.log('Task is running every minute');
     const results = await runScanImageGraph();
 
-    console.log("RESULTS ARE");
-    console.log(results);
+    console.log("Detected: ", results.numPeople);
 
     if (results.numPeople > 20) {
       console.log("More than 20 people found - initiating sale");
       setCoffeePrice(0.7);
+    } else {
+      setCoffeePrice(1);
     }
 });
 ```
@@ -988,24 +989,30 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(response => response.json())
       .then(data => {
         const container = document.getElementById('coffees-container');
-        container.innerHTML = ''; // Clear existing content
-        data.forEach(coffee => {
-          const coffeeDiv = document.createElement('div');
-          coffeeDiv.classList.add('coffee-item');
+        data.forEach((coffee, index) => {
+          const coffeeDiv = container.children[index];
+          if (coffeeDiv) {
+            const priceSpan = coffeeDiv.querySelector('p');
+            const currentPrice = parseFloat(priceSpan.textContent.split("$")[1]).toFixed(2);
+            const newPrice = coffee.price.toFixed(2);
 
-          coffeeDiv.innerHTML = `
-            <h3>${coffee.name}</h3>
-            <p>Price: $<span class="coffee-price">${coffee.price.toFixed(2)}</span></p>
-            <button class="purchase-button" data-coffee-name="${coffee.name}" data-coffee-id="${coffee.id}">Purchase</button>
-          `;
-
-          container.appendChild(coffeeDiv);
-        });
-
-        // Re-attach event listeners to new buttons
-        const purchaseButtons = document.querySelectorAll('.purchase-button');
-        purchaseButtons.forEach(button => {
-          button.addEventListener('click', handlePurchase);
+            if (currentPrice !== newPrice) {
+              priceSpan.textContent = "Price: $" + newPrice;
+              priceSpan.classList.add('price-changed');
+              setTimeout(() => priceSpan.classList.remove('price-changed'), 1000);
+            }
+          } else {
+            const coffeeDiv = document.createElement('div');
+            coffeeDiv.classList.add('coffee-item');
+  
+            coffeeDiv.innerHTML = `
+                <h3>${coffee.name}</h3>
+                <p>Price: $${coffee.price.toFixed(2)}</p>
+                <button class="purchase-button" data-coffee-name="${coffee.name}" data-coffee-id="${coffee.id}">Purchase</button>
+            `;
+  
+            container.appendChild(coffeeDiv);
+          }
         });
       })
       .catch(error => {
@@ -1016,54 +1023,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial fetch
   fetchAndDisplayCoffees();
 
-  // Fetch prices every 30 seconds
-  setInterval(fetchAndDisplayCoffees, 30000);
+  // Fetch prices every 15 seconds
+  setInterval(fetchAndDisplayCoffees, 15000);
 });
 ```
 
 This modification will fetch the latest coffee prices every 30 seconds and update the display accordingly.
-
-Now, let's modify our `fetchAndDisplayCoffees` function to apply this animation when prices change:
-
-```javascript
-function fetchAndDisplayCoffees() {
-  fetch('/api/coffees')
-    .then(response => response.json())
-    .then(data => {
-      const container = document.getElementById('coffees-container');
-      data.forEach((coffee, index) => {
-        const coffeeDiv = container.children[index];
-        if (coffeeDiv) {
-          const priceSpan = coffeeDiv.querySelector('.coffee-price');
-          const currentPrice = parseFloat(priceSpan.textContent);
-          const newPrice = coffee.price;
-          
-          if (currentPrice !== newPrice) {
-            priceSpan.textContent = newPrice.toFixed(2);
-            priceSpan.classList.add('price-changed');
-            setTimeout(() => priceSpan.classList.remove('price-changed'), 1000);
-          }
-        } else {
-          const coffeeDiv = document.createElement('div');
-          coffeeDiv.classList.add('coffee-item');
-
-          coffeeDiv.innerHTML = `
-              <h3>${coffee.name}</h3>
-              <p>Price: $${coffee.price.toFixed(2)}</p>
-              <button class="purchase-button" data-coffee-name="${coffee.name}" data-coffee-id="${coffee.id}">Purchase</button>
-          `;
-
-          container.appendChild(coffeeDiv);
-        }
-      });
-    })
-    .catch(error => {
-      console.error('Error fetching coffees:', error);
-    });
-}
-```
-
-These changes will make the price updates more visible to users, creating a more dynamic and engaging experience.
 
 Now let's run the application:
 
@@ -1079,7 +1044,7 @@ Initially the image we are checking (`street.png`) will only have a few people s
 
 ```bash
 # Simulate a populated street webcam image
-mv -f ./src/images/street2.png ./src/images/street1.png
+cp -f ./src/images/street2.png ./src/images/street1.png
 ```
 
 To stop the application press `CTRL + C` in the terminal window.
@@ -1128,69 +1093,128 @@ Let's start by modifying our backend to support this new workflow.
 
 ::page{title="Modifying the Backend for HITL"}
 
-First, we'll update our `graph.ts` file to support the HITL workflow:
+Before we begin let's layout the plan. Rather than the sales being applied automatically, we want to enable HITL so that a store manager is able to approve (and potentially modify) sales before they are applied. Moreover, we will update the code so that the coffee prices are updated _within_ the graph logic (rather than by `server.ts`). Finally, we will also leverage a conditional edge to stop processing if not enough people are detected outside (and no HITL is needed).
+
+First, we'll update our `graph.ts` file to support the new HITL workflow:
 
 ::openFile{path="example-project/src/graph.ts"}
 
-Add the following code to the existing `graph.ts` file:
-
-
-TODO: determine correct code (likely from part3 folder)
+First let's update our imports at the top of our file:
 
 ```typescript
-// ... existing imports and code ...
+import { Annotation, StateGraph, MemorySaver, START, END } from '@langchain/langgraph';
+import { setCoffeePrice } from './controllers/coffeeController';
+```
 
+To start let's add `salePercentage` to the `ImageAnnotation` so that the state knows how much sale to apply (as chosen by the manager):
+
+
+```typescript
 const ImageAnnotation = Annotation.Root({
     imageURI: Annotation<string>,
     numPeople: Annotation<number>,
     salePercentage: Annotation<number>,
-    adminApproved: Annotation<boolean>,
 });
+```
 
-// ... existing stepGetLatestImage and stepScanImage functions ...
+Now let's add a new step within our graph to estimate the sale amount based on the number of people detected in the `stepScanImage` node:
 
-const stepSuggestSale = async (state: typeof ImageAnnotation.State) => {
+```typescript
+const stepEstimateSale = async (state: typeof ImageAnnotation.State) => {
     if (state.numPeople > 40) {
-        state.salePercentage = 30;
+        state.salePercentage = 50;
     } else if (state.numPeople > 20) {
-        state.salePercentage = 15;
+        state.salePercentage = 20;
     } else {
         state.salePercentage = 0;
     }
-    state.adminApproved = false;
     return state;
 }
+```
 
-const stepWaitForAdminApproval = async (state: typeof ImageAnnotation.State) => {
-    // This step will be handled by the admin interface
+The last new node we need to add is one that actually alters the coffee sale price (this was previously done in `server.ts`).
+
+Then define the new `stepStartSale` function which uses it:
+
+```typescript
+const stepStartSale = async (state: typeof ImageAnnotation.State) => {
+    setCoffeePrice(state.salePercentage);
     return state;
 }
+```
 
-const stepApplySale = async (state: typeof ImageAnnotation.State) => {
-    if (state.adminApproved) {
-        setCoffeePrice(state.salePercentage);
+Finally let's define the `saleNeeded` function that will be used with our conditional node. This function returns a string which represents the node we want to traverse to next - in our case this will be either `stepStartSale` or `END` to finish the processing.
+
+```typescript
+const saleNeeded = async (state: typeof ImageAnnotation.State) => {
+    if (state.numPeople > 20) {
+        console.log("Sale is potentially needed");
+        return "stepStartSale"
     }
-    return state;
+    return END;
 }
+```
+
+Now that we have all of our new node functions defined we can update our graph to enable HITL.
+
+To accomplish this replace the assignment of`scanImageGraph` with:
+
+```typescript
+// Set up memory. In production systems this will likely be backed by a database.
+const graphStateMemory = new MemorySaver()
 
 const scanImageGraph = new StateGraph(ImageAnnotation)
     .addNode("stepGetLatestImage", stepGetLatestImage)
     .addNode("stepScanImage", stepScanImage)
-    .addNode("stepSuggestSale", stepSuggestSale)
-    .addNode("stepWaitForAdminApproval", stepWaitForAdminApproval)
-    .addNode("stepApplySale", stepApplySale)
+    .addNode("stepStartSale", stepStartSale)
+    .addNode("stepEstimateSale", stepEstimateSale)
     .addEdge(START, "stepGetLatestImage")
     .addEdge("stepGetLatestImage", "stepScanImage")
-    .addEdge("stepScanImage", "stepSuggestSale")
-    .addEdge("stepSuggestSale", "stepWaitForAdminApproval")
-    .addEdge("stepWaitForAdminApproval", "stepApplySale")
-    .addEdge("stepApplySale", END)
-    .compile();
-
-// ... existing export statements ...
+    .addEdge("stepScanImage", "stepEstimateSale")
+    // Third parameter is to support visualizing the graph
+    .addConditionalEdges("stepEstimateSale", saleNeeded, ["stepStartSale", END])
+    .addEdge("stepStartSale", END)
+    .compile({
+        checkpointer: graphStateMemory,
+        interruptBefore: ["stepStartSale"]
+    });
 ```
 
-This modification introduces a new step in our workflow where the AI suggests a sale percentage, but waits for admin approval before applying it.
+On top of adding in the new nodes you'll notice a few other key changes. Let's break them down:
+
+- A conditional edge is added via `addConditionalEdges`. This calls the `saleNeeded` function we previous defined which will choose either `stepStartSale` or `END` to traverse to next. We pass the _optional_ 3rd argument simple for visualization purposes.
+- We set the `checkpointer` to our `graphStateMemory` variable which will store the state of our graphs in memory.
+- Setting `interruptBefore` to `stepStartSale` simple states that we will stop processing the graph until manually restart -- this is where the HITL comes in to play.
+
+
+Visually this is what the graph looks like:
+
+![scan image HITL graph](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/LpTTtqLDgdjPP1KJGAHz-Q/Scan%20Image%20Graph.png "scan image HITL graph")
+
+Now we defined three more helper functions to get the graph state, update the graph state, and run our graph:
+
+```typescript
+// Normally in production you would have many state configs, but for demo purposes we will use a single one hardcoded.
+const demoStateConfig = { configurable: { thread_id: "1" }, streamMode: "values" as const };
+
+export const getScanImageGraphState = async () => {
+    const currState = await scanImageGraph.getState(demoStateConfig);
+    return currState;
+};
+
+export const updateScanImageGraphState = async (toUpdate: Partial<typeof ImageAnnotation.State>) => {
+    const currState = await scanImageGraph.getState(demoStateConfig);
+    await scanImageGraph.updateState(demoStateConfig, { ...currState.values, ...toUpdate });
+};
+
+export const runScanImageGraphState = async (initialInput: Partial<typeof ImageAnnotation.State>|null = null) => {
+    for await (const event of await scanImageGraph.stream(initialInput, demoStateConfig)) {
+        console.log(`Number of people detected in the image: ${event.numPeople}`);
+    }
+};
+```
+
+
 
 
 ::page{title="Creating the Admin Interface"}
@@ -1207,85 +1231,116 @@ Add the following content:
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Cafe Admin</title>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
-        h1 { color: #333; }
-        #saleInfo { margin-top: 20px; padding: 10px; border: 1px solid #ddd; }
-        button { margin-top: 10px; padding: 5px 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suggested Sale</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1, h3 {
+      color: #2c3e50;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    button[type="button"] {
+      background-color: #e74c3c;
+    }
+    button[type="button"]:hover {
+      background-color: #c0392b;
+    }
+    #noSaleMessage {
+      text-align: center;
+      font-size: 24px;
+      margin-top: 50px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Tech Cafe Admin Dashboard</h1>
-    <div id="saleInfo">
-        <h2>Current Sale Suggestion</h2>
-        <p>Number of people: <span id="numPeople"></span></p>
-        <p>Suggested sale percentage: <span id="salePercentage"></span>%</p>
-        <button id="approveBtn">Approve</button>
-        <button id="modifyBtn">Modify</button>
-        <button id="rejectBtn">Reject</button>
+  <div id="content">
+    <h1>Suggested Sale</h1>
+    <div>
+      <h3>Current Crowd</h3>
+      <img id="currentCrowdImage" alt="Current Crowd">
+      <p id="numberOfPeople">Number of people detected: </p>
     </div>
-    <script src="/js/admin.js"></script>
+    <form action="/admin/confirm" method="post">
+      <label for="salePercentage">Percentage amount of sale:</label>
+      <input type="number" id="salePercentage" name="salePercentage" value="" min="0" max="100" required>
+      <button type="submit">Confirm Sale</button>
+      <button type="button" onclick="window.location.href='/admin/cancel';">Cancel Sale</button>
+    </form>
+  </div>
+  <div id="noSaleMessage" style="display: none;">
+    <p>Sales not recommended</p>
+    <button onclick="location.reload()">Reload Page</button>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/admin/saleInfo')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Sale not found');
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('currentCrowdImage').src = data.imageURI;
+            document.getElementById('numberOfPeople').innerText += data.numPeople;
+            document.getElementById('salePercentage').value = data.salePercentage;
+        })
+        .catch(error => {
+            console.log('Error:', error.message);
+            document.getElementById('content').style.display = 'none';
+            document.getElementById('noSaleMessage').style.display = 'block';
+        });
+    });
+  </script>
 </body>
 </html>
 ```
 
-2. Create a new file `src/public/js/admin.js`:
-
-::openFile{path="example-project/src/public/js/admin.js"}
-
-Add the following content:
-
-```javascript
-document.addEventListener('DOMContentLoaded', () => {
-    fetchSaleInfo();
-
-    document.getElementById('approveBtn').addEventListener('click', () => approveSale());
-    document.getElementById('modifyBtn').addEventListener('click', () => modifySale());
-    document.getElementById('rejectBtn').addEventListener('click', () => rejectSale());
-});
-
-function fetchSaleInfo() {
-    fetch('/api/admin/sale-info')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('numPeople').textContent = data.numPeople;
-            document.getElementById('salePercentage').textContent = data.salePercentage;
-        })
-        .catch(error => console.error('Error fetching sale info:', error));
-}
-
-function approveSale() {
-    fetch('/api/admin/approve-sale', { method: 'POST' })
-        .then(() => alert('Sale approved!'))
-        .then(() => fetchSaleInfo())
-        .catch(error => console.error('Error approving sale:', error));
-}
-
-function modifySale() {
-    const newPercentage = prompt('Enter new sale percentage:');
-    if (newPercentage !== null) {
-        fetch('/api/admin/modify-sale', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ salePercentage: parseInt(newPercentage) })
-        })
-        .then(() => alert('Sale modified!'))
-        .then(() => fetchSaleInfo())
-        .catch(error => console.error('Error modifying sale:', error));
-    }
-}
-
-function rejectSale() {
-    fetch('/api/admin/reject-sale', { method: 'POST' })
-        .then(() => alert('Sale rejected!'))
-        .then(() => fetchSaleInfo())
-        .catch(error => console.error('Error rejecting sale:', error));
-}
-```
-
+![HITL site demo](https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/Yk76SjiLslcQhMogjaw5lQ/hitl-site-demo.png "HITL site demo")
 
 ::page{title="Implementing Admin Routes"}
 
@@ -1299,14 +1354,15 @@ Add the following content:
 
 ```typescript
 import express from 'express';
-import { getSaleInfo, approveSale, modifySale, rejectSale } from '../controllers/adminController';
+import { admin, saleInfo, confirmSale, cancelSale } from '../controllers/adminController';
 
 const router = express.Router();
 
-router.get('/sale-info', getSaleInfo);
-router.post('/approve-sale', approveSale);
-router.post('/modify-sale', modifySale);
-router.post('/reject-sale', rejectSale);
+router.get('/', admin);
+
+router.post('/confirm', confirmSale);
+router.get('/cancel', cancelSale);
+router.get('/saleInfo', saleInfo);
 
 export default router;
 ```
@@ -1318,34 +1374,40 @@ Create a new file `src/controllers/adminController.ts`:
 Add the following content:
 
 ```typescript
+import path from 'path';
 import { Request, Response } from 'express';
 import { getScanImageGraphState, updateScanImageGraphState, runScanImageGraphState } from '../graph';
 
-export const getSaleInfo = async (req: Request, res: Response) => {
-    const state = await getScanImageGraphState();
-    res.json({
-        numPeople: state.values.numPeople,
-        salePercentage: state.values.salePercentage
-    });
+export const admin = async (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'admin.html'));
 };
 
-export const approveSale = async (req: Request, res: Response) => {
-    await updateScanImageGraphState({ adminApproved: true });
-    await runScanImageGraphState();
-    res.sendStatus(200);
+export const confirmSale = async (req: Request, res: Response) => {
+  const { salePercentage } = req.body;
+
+  await updateScanImageGraphState({ salePercentage });
+  await runScanImageGraphState();
+
+  console.log('SALE ON');
+  res.status(200).json({});
 };
 
-export const modifySale = async (req: Request, res: Response) => {
-    const { salePercentage } = req.body;
-    await updateScanImageGraphState({ salePercentage, adminApproved: true });
-    await runScanImageGraphState();
-    res.sendStatus(200);
+export const cancelSale = async (req: Request, res: Response) => {
+  await updateScanImageGraphState({ salePercentage: 0 });
+  await runScanImageGraphState();
+
+  console.log('SALE OFF');
+  res.status(200).json({});
 };
 
-export const rejectSale = async (req: Request, res: Response) => {
-    await updateScanImageGraphState({ salePercentage: 0, adminApproved: false });
-    await runScanImageGraphState();
-    res.sendStatus(200);
+export const saleInfo = async (req: Request, res: Response) => {
+  const currState = await getScanImageGraphState();
+
+  if (currState.createdAt && currState.next.includes('stepStartSale')) {
+    res.status(200).json(currState.values);
+  } else {
+    res.status(404).json({message: 'no sale found'});
+  }
 };
 ```
 
@@ -1353,16 +1415,30 @@ Update `src/server.ts` to include the new admin routes:
 
 ::openFile{path="example-project/src/server.ts"}
 
-Add the following lines:
+First import the `adminRoutes` and `runScanImageGraphState` by adding the following to the top of the file:
 
 ```typescript
 import adminRoutes from './routes/adminRoutes';
+import { runScanImageGraphState } from './graph';
+```
 
-// ... existing code ...
+Then use these routes in our application by adding this code after `/api/coffees` is defined:
 
-app.use('/api/admin', adminRoutes);
+```typescript
+// Admin Routes
+app.use('/admin', adminRoutes);
+```
+Finally replace the cronjob at the bottom of the file with:
 
-// ... rest of the existing code ...
+```typescript
+const checkSale = async () => {
+  console.log('Task is running every minute');
+  const initialInput = {};
+  await runScanImageGraphState(initialInput);
+}
+
+// Schedule a task to run every minute
+cron.schedule('* * * * *', checkSale);
 ```
 
 
@@ -1373,7 +1449,7 @@ Now that we have implemented the Human in the Loop functionality, let's test it:
 Start your server:
 
 ```bash
-npm start
+npm run dev
 ```
 
 Click the button below to open your app:
@@ -1382,13 +1458,19 @@ Click the button below to open your app:
 
 You should see the Admin Dashboard with the current sale suggestion.
 
+_Remember: More than 20 people need to be detected in the image in order to initiate a potential sale - you should see this in the terminal. You can run the following in a separate terminal window to accomplish this:_
+
+```bash
+# Simulate a populated street webcam image
+cp -f ./src/images/street2.png ./src/images/street1.png
+```
+
 Try approving, modifying, and rejecting sales. Verify that the actions are reflected in the system.
 
 Open another browser tab. Check if the coffee prices are updated when you approve a sale.
 
 ::startApplication{port="3000" display="internal" name="Open Another Tech Cafe App" route="/"}
 
-6. Monitor your server console to see the HITL process in action.
 
 Congratulations! You have successfully implemented Human in the Loop functionality in Tech Cafe. This addition allows for more accurate and controlled dynamic pricing, combining the power of AI with human expertise.
 
@@ -1425,6 +1507,3 @@ The field of AI is rapidly evolving, and the possibilities are virtually limitle
 Thank you for participating in this Guided Project. We hope it has been an enlightening and rewarding experience.
 
 Happy coding!
-
-
-TODO: Add more interactivity at the end of each step.
