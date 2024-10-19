@@ -38,11 +38,3 @@ const coffeeMessageGraph = new StateGraph(CoffeeAnnotation)
 export const runCoffeeMessageGraph = async (initialInput: typeof CoffeeAnnotation.State) => {
     return coffeeMessageGraph.invoke(initialInput);
 }
-
-export const printCoffeeMessageGraph = async () => {
-    const representation = coffeeMessageGraph.getGraph();
-    const image = await representation.drawMermaidPng();
-    const arrayBuffer = await image.arrayBuffer();
-    // Save the image to a file
-    fs.writeFileSync('coffee_message_graph.png', Buffer.from(arrayBuffer));
-}

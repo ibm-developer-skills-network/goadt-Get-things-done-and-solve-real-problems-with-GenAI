@@ -39,7 +39,7 @@ A customer just purchased the following coffee:
 - Number of Milks: {milk}
 - Number of Sugars: {sugars}
 - Number of Sweeteners: {sweeteners}
-- Number of Whipped Cream: {whippedCream}
+- Whipped Cream: {whippedCream}
 <|eot_id|>
 <|start_header_id|>assistant<|end_header_id|>
 `;
