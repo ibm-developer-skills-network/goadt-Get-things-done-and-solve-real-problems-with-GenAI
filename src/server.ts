@@ -1,9 +1,12 @@
 import express, { Application } from 'express';
+import bodyParser from 'body-parser';
 import path from 'path';
 import coffeeRoutes from './routes/coffeeRoutes';
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Middleware to parse JSON
 app.use(express.json());

@@ -1,5 +1,4 @@
 import { Annotation, StateGraph, START, END } from '@langchain/langgraph';
-import fs from 'fs';
 import { generateMessage } from './llm';
 
 interface CoffeeCustomizations {
@@ -23,9 +22,11 @@ const stepGenerateMessage = async (state: typeof CoffeeAnnotation.State) => {
         customizations: state.customizations
     }
 
+    // Call the LLM
     const message = await generateMessage(state.customerName, coffeeOptions)
     state.message = message;
 
+    // Return the state
     return state;
 }
 

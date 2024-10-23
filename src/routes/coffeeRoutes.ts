@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import { getCoffees, getCoffeeById, processOrder } from '../controllers/coffeeController';
 
 const router = express.Router();

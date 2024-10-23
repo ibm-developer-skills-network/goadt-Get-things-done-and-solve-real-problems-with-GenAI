@@ -761,6 +761,8 @@ In the next step, we’ll begin by enhancing our LangGraph workflow to include i
 
 ::page{title="Implementing the Image Processing Graph"}
 
+_Note: If needed, you can use the **part1** folder to continue from this point. Ideally, proceed without it unless something went wrong._
+
 Our first task is to implement an image processing feature that will analyze images of the cafe to determine occupancy. This information will be used to dynamically adjust coffee prices.
 
 Open the `src/graph.ts` file:
@@ -787,7 +789,7 @@ Next, we'll create two steps for our image processing workflow:
 
 ```typescript
 const stepGetLatestImage = async (state: typeof ImageAnnotation.State) => {
-    const filePath = './src/images/street1.png';
+    const filePath = './src/images/street.png';
     const base64ImageWithPrefix = imageToBase64(filePath);
     state.imageURI = base64ImageWithPrefix;
     return state;
@@ -926,7 +928,7 @@ In the next step, we'll set up a cron job to periodically run our image processi
 
 Now that we have our image processing workflow set up, let's create a cron job that will periodically run this workflow and update our coffee prices based on the cafe's occupancy.
 
-It's important to note that in our example we are just simulating a webcam feed by manually updating (or not updating) the `street1.png` file.
+It's important to note that in our example we are just simulating a webcam feed by manually updating (or not updating) the `street.png` file.
 
 First install the `node-cron` package:
 
@@ -1044,7 +1046,7 @@ Initially the image we are checking (`street.png`) will only have a few people s
 
 ```bash
 # Simulate a populated street webcam image
-cp -f ./src/images/street2.png ./src/images/street1.png
+cp -f ./src/images/street2.png ./src/images/street.png
 ```
 
 To stop the application press `CTRL + C` in the terminal window.
@@ -1092,6 +1094,8 @@ Let's start by modifying our backend to support this new workflow.
 
 
 ::page{title="Modifying the Backend for HITL"}
+
+_Note: If needed, you can use the **part2** folder to continue from this point. Ideally, proceed without it unless something went wrong._
 
 Before we begin let's layout the plan. Rather than the sales being applied automatically, we want to enable HITL so that a store manager is able to approve (and potentially modify) sales before they are applied. Moreover, we will update the code so that the coffee prices are updated _within_ the graph logic (rather than by `server.ts`). Finally, we will also leverage a conditional edge to stop processing if not enough people are detected outside (and no HITL is needed).
 
@@ -1384,12 +1388,12 @@ export const admin = async (req: Request, res: Response) => {
 
 export const confirmSale = async (req: Request, res: Response) => {
   const { salePercentage } = req.body;
-
-  await updateScanImageGraphState({ salePercentage });
+  const actualSalePercentage = 1 - (salePercentage/100);
+  await updateScanImageGraphState({ salePercentage: actualSalePercentage });
   await runScanImageGraphState();
 
   console.log('SALE ON');
-  res.status(200).json({});
+  res.sendFile(path.join(__dirname, '..', 'public', 'admin.html'));
 };
 
 export const cancelSale = async (req: Request, res: Response) => {
@@ -1397,7 +1401,7 @@ export const cancelSale = async (req: Request, res: Response) => {
   await runScanImageGraphState();
 
   console.log('SALE OFF');
-  res.status(200).json({});
+  res.sendFile(path.join(__dirname, '..', 'public', 'admin.html'));
 };
 
 export const saleInfo = async (req: Request, res: Response) => {
@@ -1462,7 +1466,7 @@ _Remember: More than 20 people need to be detected in the image in order to init
 
 ```bash
 # Simulate a populated street webcam image
-cp -f ./src/images/street2.png ./src/images/street1.png
+cp -f ./src/images/street2.png ./src/images/street.png
 ```
 
 Try approving, modifying, and rejecting sales. Verify that the actions are reflected in the system.

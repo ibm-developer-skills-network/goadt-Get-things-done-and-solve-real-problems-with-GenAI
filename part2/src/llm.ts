@@ -1,8 +1,7 @@
-import axios from 'axios';
-import { getToken } from './utils';
-
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { WatsonxAI } from "@langchain/community/llms/watsonx_ai";
+import axios from 'axios';
+import { getToken } from './utils';
 
 export const PROJECT_ID = "skills-network";
 

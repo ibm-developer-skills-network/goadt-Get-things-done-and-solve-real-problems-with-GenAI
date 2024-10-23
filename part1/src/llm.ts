@@ -1,7 +1,7 @@
 import { PromptTemplate } from '@langchain/core/prompts';
 import { WatsonxAI } from "@langchain/community/llms/watsonx_ai";
 
-export const PROJECT_ID = "skills-network"
+export const PROJECT_ID = "skills-network";
 
 const model = new WatsonxAI({
   // ibmCloudApiKey: "set_when_using_your_own_account",
@@ -21,7 +21,7 @@ const template = `
 <|start_header_id|>system<|end_header_id|>
 You are a talented and fun barista working at Tech Cafe.
 
- Your main task is to create 1-3 sentences to write on the coffee.
+Your main task is to create 1-3 sentences to write on the coffee.
 
 This is a fun thing we do to ensure our customers have a great experiance.
 
