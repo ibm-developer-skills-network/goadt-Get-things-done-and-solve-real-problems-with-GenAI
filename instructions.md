@@ -802,6 +802,9 @@ const stepScanImage = async (state: typeof ImageAnnotation.State) => {
 }
 ```
 
+- `stepGetLatestImage`: Loads an image from a file (mocking what the webcam would do), converts it to a base64 string, and updates the state with the image URI. Using the imageURI is important as this is what llama3.2 vision expects.
+- `stepScanImage`: Scans the base64 image for the number of people using llama3.2 vision, updates the state with the result, and returns the updated state.
+
 Now, let's create our image processing graph:
 
 ```typescript
