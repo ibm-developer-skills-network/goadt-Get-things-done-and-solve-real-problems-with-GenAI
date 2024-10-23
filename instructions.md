@@ -1393,7 +1393,9 @@ export const confirmSale = async (req: Request, res: Response) => {
   await runScanImageGraphState();
 
   console.log('SALE ON');
-  res.sendFile(path.join(__dirname, '..', 'public', 'admin.html'));
+
+  // Render the main application to see the changes applied
+  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 };
 
 export const cancelSale = async (req: Request, res: Response) => {
@@ -1458,7 +1460,7 @@ npm run dev
 
 Click the button below to open your app:
 
-::startApplication{port="3000" display="internal" name="Open Tech Cafe App" route="/admin"}
+::startApplication{port="3000" display="internal" name="Open Tech Cafe App - Admin Page" route="/admin"}
 
 You should see the Admin Dashboard with the current sale suggestion.
 
