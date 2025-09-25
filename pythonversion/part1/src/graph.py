@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TypedDict, Any, Dict
 from langgraph.graph import StateGraph, START, END
-from .llm import generate_message
+from llm import generate_message
 
 
 class CoffeeCustomizations(TypedDict, total=False):

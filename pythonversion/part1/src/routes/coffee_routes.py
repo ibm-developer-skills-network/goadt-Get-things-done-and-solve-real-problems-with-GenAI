@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from flask import Blueprint
-from ..controllers.coffee_controller import get_coffees, get_coffee_by_id, process_order
+from controllers.coffee_controller import get_coffees, get_coffee_by_id, process_order
 
 coffee_bp = Blueprint('coffee_part1', __name__)
 

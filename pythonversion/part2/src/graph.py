@@ -3,8 +3,8 @@ from __future__ import annotations
 import os
 from typing import TypedDict, Any, Dict
 from langgraph.graph import StateGraph, START, END
-from .llm import generate_message, scan_image
-from ...src.utils import image_to_base64
+from llm import generate_message, scan_image
+from utils import image_to_base64
 
 
 class CoffeeCustomizations(TypedDict, total=False):

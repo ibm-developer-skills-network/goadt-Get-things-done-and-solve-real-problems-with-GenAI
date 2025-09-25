@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 from flask import request, jsonify
-from ..graph import run_coffee_message_graph
+from graph import run_coffee_message_graph
 
 
 coffees = [

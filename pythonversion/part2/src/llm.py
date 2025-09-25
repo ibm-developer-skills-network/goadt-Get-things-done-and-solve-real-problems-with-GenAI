@@ -4,7 +4,7 @@ import os
 from typing import Any, Dict
 from langchain_core.prompts import ChatPromptTemplate
 import requests
-from ...src.utils import get_token
+from utils import get_token
 
 
 PROJECT_ID = os.getenv("PROJECT_ID", "skills-network")
@@ -74,7 +74,7 @@ def generate_message(name: str, order: Dict[str, Any]) -> str:
         sugars=order.get("customizations", {}).get("sugars", 0),
         sweeteners=order.get("customizations", {}).get("sweeteners", 0),
         whippedCream=("Yes" if order.get("customizations", {}).get("whippedCream") else "No"),
-    ).to_string()
+    )
     return _watsonx_chat([
         {"role": "system", "content": [{"type": "text", "text": _system}]},
         {"role": "user", "content": [{"type": "text", "text": prompt_text}]},

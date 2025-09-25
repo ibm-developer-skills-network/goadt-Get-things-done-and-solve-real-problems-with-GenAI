@@ -4,7 +4,7 @@ import os
 from flask import Flask, jsonify, send_from_directory
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from .routes.coffee_routes import coffee_bp
+from routes.coffee_routes import coffee_bp
 
 
 def _static_path(*parts: str) -> str:
