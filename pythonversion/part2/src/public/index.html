@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tech Cafe</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Tech Cafe</h1>
+    <p>Your favorite digital cafe experience</p>
+  </header>
+  <main>
+    <section id="coffee-menu">
+      <h2>Our Coffees</h2>
+      <div id="coffees-container"></div>
+    </section>
+  </main>
+  <footer>
+    <p>&copy; 2024 Tech Cafe. All rights reserved.</p>
+  </footer>
+  <div id="purchase-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h2>Thank You, <span id="user-name"></span>!</h2>
+      <p><span id="coffee-message"></span></p>
+      <img id="coffee-image" src="" alt="Your Coffee">
+      <div id="customizations-display">
+        <h3>Customizations:</h3>
+        <ul id="customizations-list"></ul>
+      </div>
+    </div>
+  </div>
+  <div id="customization-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h2>Customize Your <span id="selected-coffee-name"></span></h2>
+      <form id="customization-form">
+        <div class="form-group">
+          <label>Number of Creams:</label>
+          <div class="button-group" data-customization="creams">
+            <button type="button" class="customize-button" data-value="0">0</button>
+            <button type="button" class="customize-button" data-value="1">1</button>
+            <button type="button" class="customize-button" data-value="2">2</button>
+            <button type="button" class="customize-button" data-value="3">3</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Number of Milks:</label>
+          <div class="button-group" data-customization="milk">
+            <button type="button" class="customize-button" data-value="0">0</button>
+            <button type="button" class="customize-button" data-value="1">1</button>
+            <button type="button" class="customize-button" data-value="2">2</button>
+            <button type="button" class="customize-button" data-value="3">3</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Number of Sugars:</label>
+          <div class="button-group" data-customization="sugars">
+            <button type="button" class="customize-button" data-value="0">0</button>
+            <button type="button" class="customize-button" data-value="1">1</button>
+            <button type="button" class="customize-button" data-value="2">2</button>
+            <button type="button" class="customize-button" data-value="3">3</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Number of Sweeteners:</label>
+          <div class="button-group" data-customization="sweeteners">
+            <button type="button" class="customize-button" data-value="0">0</button>
+            <button type="button" class="customize-button" data-value="1">1</button>
+            <button type="button" class="customize-button" data-value="2">2</button>
+            <button type="button" class="customize-button" data-value="3">3</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Whipped Cream:</label>
+          <div class="button-group" data-customization="whippedCream">
+            <button type="button" class="customize-button" data-value="true">With</button>
+            <button type="button" class="customize-button" data-value="false">Without</button>
+          </div>
+        </div>
+        <button type="submit" class="confirm-button">Confirm Customizations</button>
+      </form>
+    </div>
+  </div>
+  <script src="/js/main.js"></script>
+</body>
+</html>
+
