@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tech Cafe Admin - Crowd Analysis</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    .admin-panel {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .image-container {
+      margin: 20px 0;
+    }
+    .image-container img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 0;
+    }
+    .stat-box {
+      flex: 1;
+      padding: 15px;
+      margin: 0 10px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .stat-box h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    .stat-box p {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+    }
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+    }
+    .btn-success {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+    .price-form {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Tech Cafe Admin</h1>
+    <p>Crowd Analysis and Dynamic Pricing</p>
+  </header>
+  
+  <main class="admin-panel">
+    <h2>Current Crowd Analysis</h2>
+    
+    <div class="image-container">
+      <h3>Latest Image</h3>
+      <img id="current-image" src="/images/street.png" alt="Current street view">
+    </div>
+    
+    <div class="stats">
+      <div class="stat-box">
+        <h3>People Detected</h3>
+        <p id="people-count">Loading...</p>
+      </div>
+      <div class="stat-box">
+        <h3>Current Sale</h3>
+        <p id="current-sale">None</p>
+      </div>
+    </div>
+    
+    <div class="price-form">
+      <h3>Set Dynamic Pricing</h3>
+      <form id="price-form">
+        <div class="form-group">
+          <label for="discount-percentage">Discount Percentage:</label>
+          <input type="number" id="discount-percentage" name="discount" min="0" max="50" value="0">
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn-success">Apply Discount</button>
+          <button type="button" id="cancel-discount" class="btn btn-danger">Cancel Discount</button>
+        </div>
+      </form>
+    </div>
+    
+    <div class="actions" style="margin-top: 30px;">
+      <button id="refresh-analysis" class="btn btn-primary">Refresh Analysis</button>
+      <a href="/" class="btn btn-primary">View Store</a>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2024 Tech Cafe. All rights reserved.</p>
+  </footer>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Fetch initial data
+      fetchAnalysisData();
+      
+      // Set up event listeners
+      document.getElementById('refresh-analysis').addEventListener('click', fetchAnalysisData);
+      document.getElementById('price-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        applyDiscount();
+      });
+      document.getElementById('cancel-discount').addEventListener('click', cancelDiscount);
+    });
+    
+    function fetchAnalysisData() {
+      fetch('/api/admin/analysis')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('people-count').textContent = data.numPeople || '0';
+          document.getElementById('current-sale').textContent = 
+            data.salePercentage ? `${data.salePercentage}% Off` : 'None';
+          
+          if (data.imageURI) {
+            document.getElementById('current-image').src = data.imageURI;
+          }
+          
+          // Update discount input
+          document.getElementById('discount-percentage').value = data.salePercentage || 0;
+        })
+        .catch(error => {
+          console.error('Error fetching analysis data:', error);
+          document.getElementById('people-count').textContent = 'Error';
+        });
+    }
+    
+    function applyDiscount() {
+      const discountPercentage = document.getElementById('discount-percentage').value;
+      
+      fetch('/api/admin/discount', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ discount: parseInt(discountPercentage) })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(`Discount of ${discountPercentage}% applied successfully!`);
+        fetchAnalysisData();
+      })
+      .catch(error => {
+        console.error('Error applying discount:', error);
+        alert('Failed to apply discount. Please try again.');
+      });
+    }
+    
+    function cancelDiscount() {
+      fetch('/api/admin/discount/cancel', {
+        method: 'POST'
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('Discount cancelled successfully!');
+        fetchAnalysisData();
+      })
+      .catch(error => {
+        console.error('Error cancelling discount:', error);
+        alert('Failed to cancel discount. Please try again.');
+      });
+    }
+  </script>
+</body>
+</html>

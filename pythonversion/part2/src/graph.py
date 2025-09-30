@@ -47,11 +47,26 @@ class ImageState(TypedDict, total=False):
     numPeople: int
 
 
+# Keep track of which image we're using
+_current_image_index = 0
+_image_files = ['street.png', 'street1.png', 'street2.png', 'street1small.png']
+
 def _step_get_latest_image(state: ImageState) -> ImageState:
+    global _current_image_index
+    
+    # Rotate through available images
+    image_name = _image_files[_current_image_index]
+    _current_image_index = (_current_image_index + 1) % len(_image_files)
+    
     # Prefer local pythonversion image if present, else original repo path
     base_dir = os.path.join(os.path.dirname(__file__), 'images')
     fallback = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'part2', 'src', 'images')
-    file_path = os.path.join(base_dir, 'street.png') if os.path.exists(os.path.join(base_dir, 'street.png')) else os.path.join(fallback, 'street.png')
+    
+    file_path = os.path.join(base_dir, image_name) if os.path.exists(os.path.join(base_dir, image_name)) else os.path.join(fallback, image_name)
+    
+    # Log which image is being scanned
+    print(f"Scanning image: {file_path}")
+    
     state['imageURI'] = image_to_base64(file_path)
     return state
 
