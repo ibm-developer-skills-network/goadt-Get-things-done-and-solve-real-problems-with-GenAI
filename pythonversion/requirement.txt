@@ -1,0 +1,8 @@
+Flask>=3.0.0
+langgraph>=0.2.38
+langchain>=0.2.14
+langchain-core>=0.2.36
+requests>=2.32.0
+python-dotenv>=1.0.1
+typing-extensions>=4.12.2
+Pillow>=10.4.0
