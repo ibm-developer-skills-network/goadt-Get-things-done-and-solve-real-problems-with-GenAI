@@ -3,9 +3,15 @@ from __future__ import annotations
 import base64
 import mimetypes
 import os
+import pathlib
 from typing import Optional
+from dotenv import load_dotenv
 
 import requests
+
+# Load environment variables from .env file
+env_path = pathlib.Path(__file__).parent.parent / '.env'
+load_dotenv(dotenv_path=env_path)
 
 
 def image_to_base64(file_path: str) -> str:

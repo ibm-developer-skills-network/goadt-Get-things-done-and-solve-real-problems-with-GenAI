@@ -43,7 +43,9 @@ def _require_token_or_fallback() -> str | None:
 def _watsonx_chat(messages: list[dict], max_tokens: int = 200) -> str:
     token = _require_token_or_fallback()
     if not token:
-        return "Here’s a little lift in a cup — enjoy!"
+        print("No API token available. Using fallback message.")
+        return "Here's a little lift in a cup — enjoy!"
+    
     url = "https://us-south.ml.cloud.ibm.com/ml/v1/text/chat?version=2023-05-29"
     headers = {
         "Accept": "application/json",
@@ -60,9 +62,14 @@ def _watsonx_chat(messages: list[dict], max_tokens: int = 200) -> str:
         "repetition_penalty": 1,
         "max_tokens": max_tokens,
     }
-    resp = requests.post(url, json=body, headers=headers, timeout=60)
-    resp.raise_for_status()
-    return resp.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+    
+    try:
+        resp = requests.post(url, json=body, headers=headers, timeout=60)
+        resp.raise_for_status()
+        return resp.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+    except Exception as e:
+        print(f"Error in _watsonx_chat API call: {e}")
+        return "Enjoy this cup crafted just for you."
 
 
 def generate_message(name: str, order: Dict[str, Any]) -> str:
@@ -86,7 +93,9 @@ def scan_image(image_uri: str) -> int:
     token = _require_token_or_fallback()
     if not token:
         # Offline fallback: if no credentials, return a fixed plausible number.
-        return 0
+        print("No API token available. Using fallback value for crowd detection.")
+        return 5  # Return a reasonable default number
+    
     system_prompt = (
         "Return how many people you see in the image. Only return the number with no punctuation or quotes and be as accurate as possible."
     )
@@ -98,7 +107,7 @@ def scan_image(image_uri: str) -> int:
     }
     body = {
         "messages": [
-            {"role": "user", "content": [{"type": "text", "text": system_prompt}]},
+            {"role": "system", "content": [{"type": "text", "text": system_prompt}]},
             {
                 "role": "user",
                 "content": [{"type": "image_url", "image_url": {"url": image_uri}}],
@@ -110,11 +119,18 @@ def scan_image(image_uri: str) -> int:
         "min_new_tokens": 0,
         "max_tokens": 3,
     }
-    resp = requests.post(url, json=body, headers=headers, timeout=60)
-    resp.raise_for_status()
-    text = resp.json().get("choices", [{}])[0].get("message", {}).get("content", "0")
+    
     try:
-        return int(text)
-    except Exception:
-        return 0
+        resp = requests.post(url, json=body, headers=headers, timeout=60)
+        resp.raise_for_status()
+        text = resp.json().get("choices", [{}])[0].get("message", {}).get("content", "0")
+        try:
+            return int(text)
+        except Exception:
+            print("Could not parse response as integer. Using fallback value.")
+            return 5
+    except Exception as e:
+        print(f"Error in scan_image API call: {e}")
+        # Return a reasonable default number for demonstration purposes
+        return 5
 

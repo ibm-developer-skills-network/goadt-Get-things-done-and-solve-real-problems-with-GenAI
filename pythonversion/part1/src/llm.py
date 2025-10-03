@@ -44,6 +44,7 @@ def _watsonx_text(prompt_text: str) -> str:
     token = get_token()
     if not token:
         # Offline fallback (deterministic friendly line)
+        print("No API token available. Using fallback message.")
         return "Freshly brewed joy, {name} — your {coffee} awaits.".format(
             name="Friend", coffee="coffee"
         )
@@ -68,10 +69,15 @@ def _watsonx_text(prompt_text: str) -> str:
         "repetition_penalty": 1,
         "max_tokens": 200,
     }
-    resp = requests.post(url, json=body, headers=headers, timeout=60)
-    resp.raise_for_status()
-    content = resp.json().get("choices", [{}])[0].get("message", {}).get("content", "")
-    return content or "Enjoy this cup crafted just for you."
+    
+    try:
+        resp = requests.post(url, json=body, headers=headers, timeout=60)
+        resp.raise_for_status()
+        content = resp.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+        return content or "Enjoy this cup crafted just for you."
+    except Exception as e:
+        print(f"Error in _watsonx_text API call: {e}")
+        return "Enjoy this cup crafted just for you."
 
 
 def generate_message(name: str, order: Dict[str, Any]) -> str:
