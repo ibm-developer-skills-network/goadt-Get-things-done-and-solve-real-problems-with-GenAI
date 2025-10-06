@@ -72,4 +72,4 @@ def cancel_discount():
         print(f"Error in cancel_discount: {e}")
         return jsonify({'error': str(e)}), 500
 
-# Made with Bob
+
